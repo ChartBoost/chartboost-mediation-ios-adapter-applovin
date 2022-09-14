@@ -8,10 +8,6 @@ import AppLovinSDK
 import UIKit
 
 final class AppLovinAdapter: PartnerAdapter {
-    init() {
-        /// Perform any initialization tasks that are needed prior to setUp() here.
-    }
-    
     /// Get the version of the partner SDK.
     let partnerSDKVersion = ALSdk.version()
     
@@ -69,7 +65,7 @@ final class AppLovinAdapter: PartnerAdapter {
         }
     }
     
-    /// Override this method to compute and return a bid token for the bid request.
+    /// Compute and return a bid token for the bid request.
     /// - Parameters:
     ///   - request: The necessary data associated with the current bid request.
     ///   - completion: Handler to notify Helium of task completion.
@@ -79,8 +75,7 @@ final class AppLovinAdapter: PartnerAdapter {
         completion([:])
     }
     
-    /// Override this method to notify your partner SDK of GDPR applicability as determined by the Helium SDK.
-    /// The current implementation merely logs the GDPR applicability.
+    /// Set GDPR applicability as determined by the Helium SDK.
     /// - Parameter applies: true if GDPR applies, false otherwise.
     func setGDPRApplies(_ applies: Bool) {
         log("The AppLovin adapter has been notified that GDPR \(applies ? "applies" : "does not apply").")
@@ -89,8 +84,7 @@ final class AppLovinAdapter: PartnerAdapter {
         updateGDPRConsent()
    }
     
-    /// Override this method to notify your partner SDK of the GDPR consent status as determined by the Helium SDK.
-    /// The current implementation merely logs the GDPR consent status.
+    /// Set the GDPR consent status as determined by the Helium SDK.
     /// - Parameter status: The user's current GDPR consent status.
     func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
         log("The AppLovin adapter has been notified that the user's GDPR consent status is \(status).")
@@ -107,16 +101,14 @@ final class AppLovinAdapter: PartnerAdapter {
         }
     }
 
-    /// Override this method to notify your partner SDK of the COPPA subjectivity as determined by the Helium SDK.
-    /// The current implementation merely logs the COPPA subjectivity.
+    /// Set the COPPA subjectivity as determined by the Helium SDK.
     /// - Parameter isSubject: True if the user is subject to COPPA, false otherwise.
     func setUserSubjectToCOPPA(_ isSubject: Bool) {
         log("The AppLovin adapter has been notified that the user is \(isSubject ? "subject" : "not subject") to COPPA.")
         ALPrivacySettings.setIsAgeRestrictedUser(isSubject)
     }
     
-    /// Override this method to notify your partner SDK of the CCPA privacy String as supplied by the Helium SDK.
-    /// The current implementation merely logs the CCPA consent status.
+    /// Set the CCPA privacy String as supplied by the Helium SDK.
     /// - Parameters:
     ///   - hasGivenConsent: True if the user has given CCPA consent, false otherwise.
     ///   - privacyString: The CCPA privacy String.
@@ -125,7 +117,7 @@ final class AppLovinAdapter: PartnerAdapter {
         ALPrivacySettings.setDoNotSell(!hasGivenConsent)
     }
     
-    /// Override this method to make an ad request to the partner SDK for the given ad format.
+    /// Perform an ad request to the partner SDK for the given ad format.
     /// - Parameters:
     ///   - request: The relevant data associated with the current ad load call.
     ///   - partnerAdDelegate: Delegate for ad lifecycle notification purposes.
@@ -163,7 +155,7 @@ final class AppLovinAdapter: PartnerAdapter {
         adapters[request.identifier] = adapter
     }
 
-    /// Override this method to show the currently loaded ad.
+    /// Show the currently loaded ad.
     /// - Parameters:
     ///   - partnerAd: The PartnerAd instance containing the ad to be shown.
     ///   - viewController: The ViewController for ad presentation purposes.
@@ -193,7 +185,7 @@ final class AppLovinAdapter: PartnerAdapter {
         }
     }
     
-    /// Override this method to discard current ad objects and release resources.
+    /// Discard current ad objects and release resources.
     /// - Parameters:
     ///   - partnerAd: The PartnerAd instance containing the ad to be invalidated.
     ///   - completion: Handler to notify Helium of task completion.
