@@ -46,7 +46,7 @@ final class AppLovinAdapter: PartnerAdapter {
     ///   - completion: Handler to notify Helium of task completion.
     func setUp(with configuration: PartnerConfiguration, completion: @escaping (Error?) -> Void) {
         log(.setUpStarted)
-        guard let sdkKey = configuration.sdkKey else {
+        guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
             let error = error(.missingSetUpParameter(key: .sdkKey))
             log(.setUpFailed(error))
             return completion(error)
