@@ -31,7 +31,11 @@ final class AppLovinAdapter: PartnerAdapter {
     var adapters: [String: AppLovinAdAdapter] = [:]
 
     /// Instance of the AppLovin SDK
-    private var sdk: ALSdk?
+    static var sdk: ALSdk? {
+        didSet {
+            AppLovinAdapterConfiguration.sync()
+        }
+    }
 
     /// The last value set on `setGDPRApplies(_:)`.
     private var gdprApplies = false
@@ -56,7 +60,7 @@ final class AppLovinAdapter: PartnerAdapter {
             log(.setUpFailed(error))
             return completion(error)
         }
-        self.sdk = sdk
+        Self.sdk = sdk
 
         sdk.mediationProvider = "Helium"
         sdk.initializeSdk { _ in
@@ -129,7 +133,7 @@ final class AppLovinAdapter: PartnerAdapter {
     ///   - completion: Handler to notify Helium of task completion.
     func load(request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate, viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         log(.loadStarted(request))
-        guard let sdk = sdk else {
+        guard let sdk = Self.sdk else {
             log(.loadFailed(request, error: error(.setUpFailure)))
             return
         }
