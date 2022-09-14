@@ -11,11 +11,12 @@ Pod::Spec.new do |spec|
   spec.module_name  = 'HeliumAdapterAppLovin'
   spec.source       = { :git => 'https://github.com/ChartBoost/helium-ios-adapter-applovin.git', :tag => '#{spec.version}' }
   spec.source_files = 'Source/**/*.{swift}'
+  spec.static_framework = true
 
   # Minimum supported versions
   spec.swift_version         = '5.0'
   spec.ios.deployment_target = '10.0'
-
+  
   # System frameworks used
   spec.ios.frameworks = ['Foundation', 'SafariServices', 'UIKit', 'WebKit']
   
