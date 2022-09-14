@@ -76,12 +76,12 @@ extension AppLovinAdAdapterInterstitial: ALAdDisplayDelegate {
 
     func ad(_ ad: ALAd, wasHiddenIn view: UIView) {
         log(.didDismiss(partnerAd, error: nil))
-        partnerAdDelegate?.didDismiss(partnerAd, error: nil)
+        partnerAdDelegate?.didDismiss(partnerAd, error: nil) ?? log(.delegateUnavailable)
     }
 
     func ad(_ ad: ALAd, wasClickedIn view: UIView) {
         log(.didClick(partnerAd, error: nil))
-        partnerAdDelegate?.didClick(partnerAd)
+        partnerAdDelegate?.didClick(partnerAd) ?? log(.delegateUnavailable)
     }
 }
 

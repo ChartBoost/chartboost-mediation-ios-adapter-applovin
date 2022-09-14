@@ -100,7 +100,7 @@ extension AppLovinAdAdapterBanner: ALAdDisplayDelegate {
 
     func ad(_ ad: ALAd, wasClickedIn view: UIView) {
         log(.didClick(partnerAd, error: nil))
-        partnerAdDelegate?.didClick(partnerAd)
+        partnerAdDelegate?.didClick(partnerAd) ?? log(.delegateUnavailable)
     }
 }
 

@@ -36,7 +36,7 @@ extension AppLovinAdAdapterRewarded {
             hasRewarded = true
             let reward = Reward(amount: 1, label: "")
             log(.didReward(partnerAd, reward: reward))
-            partnerAdDelegate?.didReward(partnerAd, reward: reward)
+            partnerAdDelegate?.didReward(partnerAd, reward: reward) ?? log(.delegateUnavailable)
         }
     }
 }
