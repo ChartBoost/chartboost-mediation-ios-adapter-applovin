@@ -44,7 +44,7 @@ class AppLovinAdAdapterInterstitial: NSObject, AppLovinAdAdapter {
     
     func show(viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         guard let ad = partnerAd.ad as? ALAd else {
-            return completion(.failure(error(.showFailure(partnerAd), description: "Ad instance is nil/not a ALAd.")))
+            return completion(.failure(error(.showFailure(partnerAd), description: "Ad instance is nil/not an ALAd.")))
         }
         showCompletion = completion
         let interstitial = ALInterstitialAd(sdk: sdk)
