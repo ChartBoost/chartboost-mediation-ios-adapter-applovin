@@ -143,15 +143,14 @@ final class AppLovinAdapter: PartnerAdapter {
 
         switch request.format {
         case .banner:
-            fatalError()
+            adapter = AppLovinAdAdapterBanner(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         case .interstitial:
             adapter = AppLovinAdAdapterInterstitial(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         case .rewarded:
             adapter = AppLovinAdAdapterRewarded(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
-
-            adapter.load(viewController: viewController, completion: loadCompletion)
         }
 
+        adapter.load(viewController: viewController, completion: loadCompletion)
         adapters[request.identifier] = adapter
     }
 
