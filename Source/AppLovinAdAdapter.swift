@@ -1,5 +1,6 @@
 //
 //  AppLovinAdAdapter.swift
+//  ChartboostHeliumAdapterAppLovin
 //
 
 import Foundation

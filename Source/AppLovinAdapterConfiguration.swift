@@ -1,5 +1,6 @@
 //
 //  AppLovinAdapterConfiguration.swift
+//  ChartboostHeliumAdapterAppLovin
 //
 
 import AppLovinSDK
