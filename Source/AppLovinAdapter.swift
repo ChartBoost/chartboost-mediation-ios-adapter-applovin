@@ -19,7 +19,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// [Helium SDK Major Version].[Partner SDK Major Version].[Partner SDK Minor Version].[Partner SDK Patch Version].[Adapter Version]
     ///
     /// For example, if this adapter is compatible with Helium SDK 4.x.y and partner SDK 1.0.0, and this is its initial release, then its version should be 4.1.0.0.0.
-    let adapterVersion = "4.11.3.0.0"
+    let adapterVersion = "4.11.3.1.0"
     
     /// Get the internal name of the partner.
     let partnerIdentifier = "applovin"
