@@ -61,8 +61,14 @@ final class AppLovinAdapter: PartnerAdapter {
 
         sdk.mediationProvider = "Helium"
         sdk.initializeSdk { _ in
-            self.log(.setUpSucceded)
-            completion(nil)
+            if sdk.isInitialized {
+                self.log(.setUpSucceded)
+                completion(nil)
+            }
+            else {
+                let error = self.error(.setUpFailure, description: "AppLovin failed to initialize")
+                completion(error)
+            }
         }
     }
     
