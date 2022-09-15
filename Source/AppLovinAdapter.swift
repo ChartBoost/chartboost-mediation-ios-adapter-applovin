@@ -139,17 +139,6 @@ final class AppLovinAdapter: PartnerAdapter {
         }
         let adapter: AppLovinAdAdapter
 
-        let loadCompletion: (Result<PartnerAd, Error>) -> Void = { [weak self] result in
-            defer { completion(result) }
-            guard let self = self else { return }
-            do {
-                self.log(.loadSucceeded(try result.get()))
-            } catch {
-                self.log(.loadFailed(request, error: error))
-                self.adapters[request.identifier] = nil
-            }
-        }
-
         switch request.format {
         case .banner:
             adapter = AppLovinAdAdapterBanner(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
@@ -159,7 +148,16 @@ final class AppLovinAdapter: PartnerAdapter {
             adapter = AppLovinAdAdapterRewarded(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         }
 
-        adapter.load(completion: loadCompletion)
+        adapter.load { [weak self] result in
+           defer { completion(result) }
+           guard let self = self else { return }
+           do {
+               self.log(.loadSucceeded(try result.get()))
+           } catch {
+               self.log(.loadFailed(request, error: error))
+               self.adapters[request.identifier] = nil
+           }
+        }
         adapters[request.identifier] = adapter
     }
 
@@ -171,20 +169,18 @@ final class AppLovinAdapter: PartnerAdapter {
     func show(_ partnerAd: PartnerAd, viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         log(.showStarted(partnerAd))
 
-        let showCompletion: (Result<PartnerAd, Error>) -> Void = { [weak self] result in
-            defer { completion(result) }
-            guard let self = self else { return }
-            switch result {
-            case .success:
-                self.log(.showSucceeded(partnerAd))
-            case .failure(let error):
-                self.log(.showFailed(partnerAd, error: error))
-            }
-        }
-
         /// Retrieve the adapter instance to show the ad
         if let adapter = adapters[partnerAd.request.identifier] {
-            adapter.show(completion: showCompletion)
+            adapter.show { [weak self] result in
+                defer { completion(result) }
+                guard let self = self else { return }
+                switch result {
+                case .success:
+                    self.log(.showSucceeded(partnerAd))
+                case .failure(let error):
+                    self.log(.showFailed(partnerAd, error: error))
+                }
+            }
         } else {
             let error = error(.noAdReadyToShow(partnerAd))
             log(.showFailed(partnerAd, error: error))
