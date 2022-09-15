@@ -41,6 +41,7 @@ final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
         let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
         banner.adDisplayDelegate = self
         banner.adLoadDelegate = self
+        
         partnerAd = PartnerAd(ad: banner, details: [:], request: request)
         banner.loadNextAd()
     }
@@ -57,18 +58,18 @@ extension AppLovinAdAdapterBanner: ALAdLoadDelegate {
     }
 
     func adService(_ adService: ALAdService, didFailToLoadAdWithError code: Int32) {
-        loadCompletion?(.failure(error(.loadFailure(request)))) ?? log(.loadResultIgnored)
+        loadCompletion?(.failure(error(.loadFailure(request), description: "AppLovin error \(code)"))) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 }
 
 extension AppLovinAdAdapterBanner: ALAdDisplayDelegate {
     func ad(_ ad: ALAd, wasDisplayedIn view: UIView) {
-        // NO-OP
+        log("wasDisplayedIn")
     }
 
     func ad(_ ad: ALAd, wasHiddenIn view: UIView) {
-        // NO-OP
+        log("wasHiddenIn")
     }
 
     func ad(_ ad: ALAd, wasClickedIn view: UIView) {

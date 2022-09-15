@@ -48,6 +48,7 @@ class AppLovinAdAdapterInterstitial: NSObject, AppLovinAdAdapter {
             return completion(.failure(error(.showFailure(partnerAd), description: "Ad instance is nil/not an ALAd.")))
         }
         showCompletion = completion
+        
         let interstitial = ALInterstitialAd(sdk: sdk)
         interstitial.adDisplayDelegate = self
         interstitial.adVideoPlaybackDelegate = self
@@ -87,7 +88,7 @@ extension AppLovinAdAdapterInterstitial: ALAdDisplayDelegate {
 
 extension AppLovinAdAdapterInterstitial: ALAdVideoPlaybackDelegate {
     func videoPlaybackBegan(in ad: ALAd) {
-        // NO-OP
+        log("videoPlaybackBegan")
     }
 
     func videoPlaybackEnded(in ad: ALAd, atPlaybackPercent percentPlayed: NSNumber, fullyWatched wasFullyWatched: Bool) {
