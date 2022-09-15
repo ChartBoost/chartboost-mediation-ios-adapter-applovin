@@ -95,7 +95,7 @@ final class AppLovinAdapter: PartnerAdapter {
     }
 
     private func updateGDPRConsent() {
-        // Set Chartboost GDPR consent using both gdprApplies and gdprStatus
+        // Set AppLovin GDPR consent using both gdprApplies and gdprStatus
         if gdprApplies {
             // https://dash.applovin.com/docs/integration#iosPrivacySettings
             ALPrivacySettings.setHasUserConsent(gdprStatus == .granted)
@@ -208,7 +208,7 @@ final class AppLovinAdapter: PartnerAdapter {
 
 /// Convenience extension to access AppLovin credentials from the configuration.
 private extension PartnerConfiguration {
-    var sdkKey: String? { credentials[.sdkKey] }
+    var sdkKey: String? { credentials[.sdkKey] as? String }
 }
 
 private extension String {

@@ -79,12 +79,12 @@ final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
 
 extension AppLovinAdAdapterBanner: ALAdLoadDelegate {
     func adService(_ adService: ALAdService, didLoad ad: ALAd) {
-        loadCompletion?(.success(partnerAd))
+        loadCompletion?(.success(partnerAd)) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 
     func adService(_ adService: ALAdService, didFailToLoadAdWithError code: Int32) {
-        loadCompletion?(.failure(error(.loadFailure(request))))
+        loadCompletion?(.failure(error(.loadFailure(request)))) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 }

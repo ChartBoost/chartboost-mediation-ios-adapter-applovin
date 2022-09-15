@@ -13,26 +13,16 @@ public class AppLovinAdapterConfiguration {
 
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
-    private static var _testMode = false
-    public static var testMode: Bool {
-        get {
-            return _testMode
-        }
-        set {
-            _testMode = newValue
+    public static var testMode: Bool = false {
+        didSet {
             syncTestMode()
         }
     }
     
     /// Flag that can optionally be set to enable the partner's verbose logging.
     /// Disabled by default.
-    private static var _verboseLogging = false
-    public static var verboseLogging: Bool {
-        get {
-            return _verboseLogging
-        }
-        set {
-            _verboseLogging = newValue
+    public static var verboseLogging: Bool = false {
+        didSet {
             syncVerboseLogging()
         }
     }

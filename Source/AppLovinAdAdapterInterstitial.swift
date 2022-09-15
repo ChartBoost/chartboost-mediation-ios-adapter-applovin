@@ -58,19 +58,19 @@ class AppLovinAdAdapterInterstitial: NSObject, AppLovinAdAdapter {
 extension AppLovinAdAdapterInterstitial: ALAdLoadDelegate {
     func adService(_ adService: ALAdService, didLoad ad: ALAd) {
         partnerAd = PartnerAd(ad: ad, details: [:], request: request)
-        loadCompletion?(.success(partnerAd))
+        loadCompletion?(.success(partnerAd)) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 
     func adService(_ adService: ALAdService, didFailToLoadAdWithError code: Int32) {
-        loadCompletion?(.failure(error(.loadFailure(request))))
+        loadCompletion?(.failure(error(.loadFailure(request)))) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 }
 
 extension AppLovinAdAdapterInterstitial: ALAdDisplayDelegate {
     func ad(_ ad: ALAd, wasDisplayedIn view: UIView) {
-        showCompletion?(.success(partnerAd))
+        showCompletion?(.success(partnerAd)) ?? log(.showResultIgnored)
         showCompletion = nil
     }
 
