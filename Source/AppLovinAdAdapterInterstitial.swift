@@ -64,7 +64,7 @@ extension AppLovinAdAdapterInterstitial: ALAdLoadDelegate {
     }
 
     func adService(_ adService: ALAdService, didFailToLoadAdWithError code: Int32) {
-        loadCompletion?(.failure(error(.loadFailure(request)))) ?? log(.loadResultIgnored)
+        loadCompletion?(.failure(error(.loadFailure(request), description: "AppLovin error \(code)"))) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 }
