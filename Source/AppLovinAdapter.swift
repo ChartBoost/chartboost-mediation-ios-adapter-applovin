@@ -133,8 +133,9 @@ final class AppLovinAdapter: PartnerAdapter {
     func load(request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate, viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         log(.loadStarted(request))
         guard let sdk = Self.sdk else {
-            log(.loadFailed(request, error: error(.setUpFailure)))
-            return
+            let error = error(.setUpFailure)
+            log(.loadFailed(request, error: error))
+            return completion(.failure(error))
         }
         let adapter: AppLovinAdAdapter
 
