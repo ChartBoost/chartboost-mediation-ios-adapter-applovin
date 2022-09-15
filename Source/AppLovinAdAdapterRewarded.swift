@@ -33,12 +33,17 @@ extension AppLovinAdAdapterRewarded {
             showCompletion = nil
         }
         else if isEligibleToReward, wasFullyWatched, !hasRewarded {
-            let reward = Reward(amount: 1, label: "")
-            
-            log(.didReward(partnerAd, reward: reward))
-            partnerAdDelegate?.didReward(partnerAd, reward: reward) ?? log(.delegateUnavailable)                       
-            
-            hasRewarded = true
+            if let partnerAdDelegate = partnerAdDelegate {
+                let reward = Reward(amount: 1, label: "")
+
+                log(.didReward(partnerAd, reward: reward))
+                partnerAdDelegate.didReward(partnerAd, reward: reward)
+
+                hasRewarded = true
+            }
+            else {
+                log(.delegateUnavailable)
+            }
         }
     }
 }
