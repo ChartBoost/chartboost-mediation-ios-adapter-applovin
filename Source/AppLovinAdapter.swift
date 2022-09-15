@@ -146,6 +146,7 @@ final class AppLovinAdapter: PartnerAdapter {
                 self.log(.loadSucceeded(try result.get()))
             } catch {
                 self.log(.loadFailed(request, error: error))
+                self.adapters[request.identifier] = nil
             }
         }
 
