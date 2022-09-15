@@ -151,7 +151,7 @@ final class AppLovinAdapter: PartnerAdapter {
             adapter = AppLovinAdAdapterRewarded(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         }
 
-        adapter.load(viewController: viewController, completion: loadCompletion)
+        adapter.load(completion: loadCompletion)
         adapters[request.identifier] = adapter
     }
 
@@ -176,7 +176,7 @@ final class AppLovinAdapter: PartnerAdapter {
 
         /// Retrieve the adapter instance to show the ad
         if let adapter = adapters[partnerAd.request.identifier] {
-            adapter.show(viewController: viewController, completion: showCompletion)
+            adapter.show(completion: showCompletion)
         } else {
             let error = error(.noAdReadyToShow(partnerAd))
             log(.showFailed(partnerAd, error: error))

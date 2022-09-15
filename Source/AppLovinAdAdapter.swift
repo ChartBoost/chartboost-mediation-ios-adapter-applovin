@@ -14,8 +14,8 @@ protocol AppLovinAdAdapter: NSObjectProtocol, PartnerLogger, PartnerErrorFactory
     init(sdk: ALSdk, adapter: PartnerAdapter, request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate)
 
     /// Load the ad
-    func load(viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void)
+    func load(completion: @escaping (Result<PartnerAd, Error>) -> Void)
 
     /// Show the ad
-    func show(viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void)
+    func show(completion: @escaping (Result<PartnerAd, Error>) -> Void)
 }

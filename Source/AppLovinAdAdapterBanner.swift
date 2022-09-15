@@ -28,9 +28,6 @@ final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
     /// The completion for the ongoing load operation
     var loadCompletion: ((Result<PartnerAd, Error>) -> Void)?
 
-    /// The completion for the ongoing show operation.
-    var showCompletion: ((Result<PartnerAd, Error>) -> Void)?
-
     required init(sdk: ALSdk, adapter: PartnerAdapter, request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate) {
         self.sdk = sdk
         self.adapter = adapter
@@ -38,42 +35,18 @@ final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
         self.partnerAdDelegate = partnerAdDelegate
     }
 
-    func load(viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
-        // banners show on load
-        guard let viewController = viewController else {
-            let error = error(.noViewController)
-            log(.loadFailed(request, error: error))
-            return completion(.failure(error))
-        }
-        let showCompletion: (Result<PartnerAd, Error>) -> Void = { [weak self] result in
-            defer { completion(result) }
-            guard let self = self else { return }
-            switch result {
-            case .success:
-                self.log(.showSucceeded(self.partnerAd))
-            case .failure(let error):
-                self.log(.showFailed(self.partnerAd, error: error))
-            }
-        }
-        loadCompletion = { [weak self] result in
-            guard let self = self else { return }
-            if case .success = result {
-                self.show(viewController: viewController, completion: showCompletion)
-            }
-            completion(result)
-        }
+    func load(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+        loadCompletion = completion
 
         let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
         banner.adDisplayDelegate = self
-        banner.adEventDelegate = self
         banner.adLoadDelegate = self
         partnerAd = PartnerAd(ad: banner, details: [:], request: request)
         banner.loadNextAd()
     }
 
-    func show(viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
-        showCompletion = completion
-        completion(.success(partnerAd))
+    func show(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+        // NO-OP
     }
 }
 
@@ -101,13 +74,6 @@ extension AppLovinAdAdapterBanner: ALAdDisplayDelegate {
     func ad(_ ad: ALAd, wasClickedIn view: UIView) {
         log(.didClick(partnerAd, error: nil))
         partnerAdDelegate?.didClick(partnerAd) ?? log(.delegateUnavailable)
-    }
-}
-
-extension AppLovinAdAdapterBanner: ALAdViewEventDelegate {
-    func ad(_ ad: ALAd, didFailToDisplayIn adView: ALAdView, withError code: ALAdViewDisplayErrorCode) {
-        showCompletion?(.failure(error(.showFailure(partnerAd))))
-        showCompletion = nil
     }
 }
 

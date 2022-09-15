@@ -38,12 +38,12 @@ class AppLovinAdAdapterInterstitial: NSObject, AppLovinAdAdapter {
         self.partnerAdDelegate = partnerAdDelegate
     }
     
-    func load(viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    func load(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         loadCompletion = completion
         sdk.adService.loadNextAd(forZoneIdentifier: request.partnerPlacement, andNotify: self)
     }
     
-    func show(viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    func show(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         guard let ad = partnerAd.ad as? ALAd else {
             return completion(.failure(error(.showFailure(partnerAd), description: "Ad instance is nil/not an ALAd.")))
         }

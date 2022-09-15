@@ -38,7 +38,7 @@ extension AppLovinAdapterConfiguration {
 
     static func syncTestMode() {
         guard let sdk = Self.sdk else { return }
-        if _testMode {
+        if testMode {
             let idfa = ASIdentifierManager.shared().advertisingIdentifier
             if idfa.uuidString == "00000000-0000-0000-0000-000000000000" {
                 print("Invalid IDFA set for AppLovin test mode. Check user privacy settings.")
@@ -50,12 +50,12 @@ extension AppLovinAdapterConfiguration {
         else {
             sdk.settings.testDeviceAdvertisingIdentifiers = []
         }
-        print("The AppLovin SDK's test mode is \(_testMode ? "enabled" : "disabled").")
+        print("The AppLovin SDK's test mode is \(testMode ? "enabled" : "disabled").")
     }
 
     static func syncVerboseLogging() {
         guard let sdk = Self.sdk else { return }
-        sdk.settings.isVerboseLogging = _verboseLogging
-        print("The AppLovin SDK's verbose logging is \(_verboseLogging ? "enabled" : "disabled").")
+        sdk.settings.isVerboseLogging = verboseLogging
+        print("The AppLovin SDK's verbose logging is \(verboseLogging ? "enabled" : "disabled").")
     }
 }
