@@ -9,7 +9,7 @@ import AppLovinSDK
 import UIKit
 
 /// Interstitial ad adapter for AppLovin
-class AppLovinAdAdapterInterstitial: NSObject, AppLovinAdAdapter {
+class AppLovinAdAdapterInterstitial: NSObject, PartnerAdAdapter {
     /// The AppLovin SDK instance
     let sdk: ALSdk
 
@@ -38,12 +38,12 @@ class AppLovinAdAdapterInterstitial: NSObject, AppLovinAdAdapter {
         self.partnerAdDelegate = partnerAdDelegate
     }
     
-    func load(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    func load(with viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         loadCompletion = completion
         sdk.adService.loadNextAd(forZoneIdentifier: request.partnerPlacement, andNotify: self)
     }
     
-    func show(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    func show(with viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         guard let ad = partnerAd.ad as? ALAd else {
             return completion(.failure(error(.showFailure(partnerAd), description: "Ad instance is nil/not an ALAd.")))
         }

@@ -8,7 +8,7 @@ import HeliumSdk
 import AppLovinSDK
 import UIKit
 
-final class AppLovinAdapter: PartnerAdapter {
+final class AppLovinAdapter: ModularPartnerAdapter {
     /// Get the version of the partner SDK.
     let partnerSDKVersion = ALSdk.version()
     
@@ -25,7 +25,7 @@ final class AppLovinAdapter: PartnerAdapter {
     let partnerDisplayName = "AppLovin"
     
     /// Storage of adapter instances.  Keyed by the request identifier.
-    var adapters: [String: AppLovinAdAdapter] = [:]
+    var adAdapters: [String: PartnerAdAdapter] = [:]
 
     /// Instance of the AppLovin SDK
     static var sdk: ALSdk? {
@@ -124,88 +124,17 @@ final class AppLovinAdapter: PartnerAdapter {
         ALPrivacySettings.setDoNotSell(!hasGivenConsent)
     }
     
-    /// Perform an ad request to the partner SDK for the given ad format.
-    /// - Parameters:
-    ///   - request: The relevant data associated with the current ad load call.
-    ///   - partnerAdDelegate: Delegate for ad lifecycle notification purposes.
-    ///   - viewController: The ViewController for ad presentation purposes.
-    ///   - completion: Handler to notify Helium of task completion.
-    func load(request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate, viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
-        log(.loadStarted(request))
+    func makeAdAdapter(request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate) throws -> PartnerAdAdapter {
         guard let sdk = Self.sdk else {
-            let error = error(.setUpFailure)
-            log(.loadFailed(request, error: error))
-            return completion(.failure(error))
+            throw error(.loadFailure(request), description: "No SDK instance available")
         }
-        let adapter: AppLovinAdAdapter
-
         switch request.format {
         case .banner:
-            adapter = AppLovinAdAdapterBanner(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
+            return AppLovinAdAdapterBanner(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         case .interstitial:
-            adapter = AppLovinAdAdapterInterstitial(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
+            return AppLovinAdAdapterInterstitial(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         case .rewarded:
-            adapter = AppLovinAdAdapterRewarded(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
-        }
-
-        adapter.load { [weak self] result in
-           defer { completion(result) }
-           guard let self = self else { return }
-           do {
-               self.log(.loadSucceeded(try result.get()))
-           } catch {
-               self.log(.loadFailed(request, error: error))
-               self.adapters[request.identifier] = nil
-           }
-        }
-        adapters[request.identifier] = adapter
-    }
-
-    /// Show the currently loaded ad.
-    /// - Parameters:
-    ///   - partnerAd: The PartnerAd instance containing the ad to be shown.
-    ///   - viewController: The ViewController for ad presentation purposes.
-    ///   - completion: Handler to notify Helium of task completion.
-    func show(_ partnerAd: PartnerAd, viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
-        log(.showStarted(partnerAd))
-
-        /// Retrieve the adapter instance to show the ad
-        if let adapter = adapters[partnerAd.request.identifier] {
-            adapter.show { [weak self] result in
-                defer { completion(result) }
-                guard let self = self else { return }
-                switch result {
-                case .success:
-                    self.log(.showSucceeded(partnerAd))
-                case .failure(let error):
-                    self.log(.showFailed(partnerAd, error: error))
-                }
-            }
-        } else {
-            let error = error(.noAdReadyToShow(partnerAd))
-            log(.showFailed(partnerAd, error: error))
-
-            completion(.failure(error))
-        }
-    }
-    
-    /// Discard current ad objects and release resources.
-    /// - Parameters:
-    ///   - partnerAd: The PartnerAd instance containing the ad to be invalidated.
-    ///   - completion: Handler to notify Helium of task completion.
-    func invalidate(_ partnerAd: PartnerAd, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
-        log(.invalidateStarted(partnerAd))
-        
-        if adapters[partnerAd.request.identifier] != nil {
-            adapters.removeValue(forKey: partnerAd.request.identifier)
-
-            log(.invalidateSucceeded(partnerAd))
-            completion(.success(partnerAd))
-        } else {
-            let error = error(.noAdToInvalidate(partnerAd))
-
-            log(.invalidateFailed(partnerAd, error: error))
-            completion(.failure(error))
+            return AppLovinAdAdapterRewarded(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
         }
     }
 }
