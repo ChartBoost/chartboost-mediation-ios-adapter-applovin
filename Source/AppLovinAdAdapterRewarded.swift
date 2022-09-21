@@ -13,7 +13,7 @@ final class AppLovinAdAdapterRewarded: AppLovinAdAdapterInterstitial {
     private var isEligibleToReward = false
     private var hasRewarded = false
 
-    override func show(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    override func show(with viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         guard let ad = partnerAd.ad as? ALAd else {
             return completion(.failure(error(.showFailure(partnerAd), description: "Ad instance is nil/not a ALAd.")))
         }

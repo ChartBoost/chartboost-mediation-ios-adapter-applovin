@@ -9,7 +9,7 @@ import AppLovinSDK
 import UIKit
 
 /// Banner ad adapter for AppLovin
-final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
+final class AppLovinAdAdapterBanner: NSObject, PartnerAdAdapter {
     /// The AppLovin SDK instance
     let sdk: ALSdk
 
@@ -28,14 +28,14 @@ final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
     /// The completion for the ongoing load operation
     var loadCompletion: ((Result<PartnerAd, Error>) -> Void)?
 
-    required init(sdk: ALSdk, adapter: PartnerAdapter, request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate) {
+    init(sdk: ALSdk, adapter: PartnerAdapter, request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate) {
         self.sdk = sdk
         self.adapter = adapter
         self.request = request
         self.partnerAdDelegate = partnerAdDelegate
     }
 
-    func load(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    func load(with viewController: UIViewController?, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         loadCompletion = completion
 
         let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
@@ -46,7 +46,7 @@ final class AppLovinAdAdapterBanner: NSObject, AppLovinAdAdapter {
         banner.loadNextAd()
     }
 
-    func show(completion: @escaping (Result<PartnerAd, Error>) -> Void) {
+    func show(with viewController: UIViewController, completion: @escaping (Result<PartnerAd, Error>) -> Void) {
         // NO-OP
     }
 }
