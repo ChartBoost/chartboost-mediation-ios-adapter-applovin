@@ -94,7 +94,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set the GDPR consent status as determined by the Helium SDK.
     /// - Parameter status: The user's current GDPR consent status.
     func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
-        log("The AppLovin adapter has been notified that the user's GDPR consent status is \(status).")
+        log(.setGDPRConsent(status))
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprStatus = status
         updateGDPRConsent()
@@ -111,7 +111,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set the COPPA subjectivity as determined by the Helium SDK.
     /// - Parameter isSubject: True if the user is subject to COPPA, false otherwise.
     func setUserSubjectToCOPPA(_ isSubject: Bool) {
-        log("The AppLovin adapter has been notified that the user is \(isSubject ? "subject" : "not subject") to COPPA.")
+        log(.setCOPPAConsent(isSubject))
         ALPrivacySettings.setIsAgeRestrictedUser(isSubject)
     }
     
@@ -120,7 +120,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     ///   - hasGivenConsent: True if the user has given CCPA consent, false otherwise.
     ///   - privacyString: The CCPA privacy String.
     func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
-        log("The AppLovin adapter has been notified that the user has \(hasGivenConsent ? "given" : "not given") CCPA consent.")
+        log(.setCCPAConsent(hasGivenConsent))
         ALPrivacySettings.setDoNotSell(!hasGivenConsent)
     }
     
