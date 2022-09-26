@@ -85,7 +85,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set GDPR applicability as determined by the Helium SDK.
     /// - Parameter applies: true if GDPR applies, false otherwise.
     func setGDPRApplies(_ applies: Bool) {
-        log("The AppLovin adapter has been notified that GDPR \(applies ? "applies" : "does not apply").")
+        log(.privacyUpdated(setting: "'gdprApplies'", value: applies))
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprApplies = applies
         updateGDPRConsent()
@@ -94,7 +94,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set the GDPR consent status as determined by the Helium SDK.
     /// - Parameter status: The user's current GDPR consent status.
     func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
-        log(.setGDPRConsent(status))
+        log(.privacyUpdated(setting: "'gdprStatus'", value: status))
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprStatus = status
         updateGDPRConsent()
@@ -111,7 +111,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set the COPPA subjectivity as determined by the Helium SDK.
     /// - Parameter isSubject: True if the user is subject to COPPA, false otherwise.
     func setUserSubjectToCOPPA(_ isSubject: Bool) {
-        log(.setCOPPAConsent(isSubject))
+        log(.privacyUpdated(setting: "'IsAgeRestrictedUser'", value: isSubject))
         ALPrivacySettings.setIsAgeRestrictedUser(isSubject)
     }
     
@@ -120,7 +120,8 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     ///   - hasGivenConsent: True if the user has given CCPA consent, false otherwise.
     ///   - privacyString: The CCPA privacy String.
     func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
-        log(.setCCPAConsent(hasGivenConsent))
+        // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
+        log(.privacyUpdated(setting: "'DoNotSell'", value: !hasGivenConsent))
         ALPrivacySettings.setDoNotSell(!hasGivenConsent)
     }
     
