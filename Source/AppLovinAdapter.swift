@@ -85,7 +85,6 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set GDPR applicability as determined by the Helium SDK.
     /// - Parameter applies: true if GDPR applies, false otherwise.
     func setGDPRApplies(_ applies: Bool) {
-        log(.privacyUpdated(setting: "'gdprApplies'", value: applies))
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprApplies = applies
         updateGDPRConsent()
@@ -94,7 +93,6 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// Set the GDPR consent status as determined by the Helium SDK.
     /// - Parameter status: The user's current GDPR consent status.
     func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
-        log(.privacyUpdated(setting: "'gdprStatus'", value: status))
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprStatus = status
         updateGDPRConsent()
@@ -105,6 +103,7 @@ final class AppLovinAdapter: ModularPartnerAdapter {
         if gdprApplies {
             // https://dash.applovin.com/docs/integration#iosPrivacySettings
             ALPrivacySettings.setHasUserConsent(gdprStatus == .granted)
+            log(.privacyUpdated(setting: "'setHasUserConsent'", value: gdprStatus == .granted))
         }
     }
 
