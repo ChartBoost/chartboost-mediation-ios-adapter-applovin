@@ -8,25 +8,22 @@ import HeliumSdk
 import AppLovinSDK
 import UIKit
 
-final class AppLovinAdapter: ModularPartnerAdapter {
-    /// Get the version of the partner SDK.
+/// The Helium AppLovin adapter.
+final class AppLovinAdapter: PartnerAdapter {
+    
+    /// The version of the partner SDK, e.g. "5.13.2"
     let partnerSDKVersion = ALSdk.version()
     
-    /// Get the version of the mediation adapter. To determine the version, use the following scheme to indicate compatibility:
-    /// [Helium SDK Major Version].[Partner SDK Major Version].[Partner SDK Minor Version].[Partner SDK Patch Version].[Adapter Version]
-    ///
-    /// For example, if this adapter is compatible with Helium SDK 4.x.y and partner SDK 1.0.0, and this is its initial release, then its version should be 4.1.0.0.0.
+    /// The version of the adapter, e.g. "2.5.13.2.0"
+    /// The first number is Helium SDK's major version. The next 3 numbers are the partner SDK version. The last number is the build version of the adapter.
     let adapterVersion = "4.11.3.1.0"
     
-    /// Get the internal name of the partner.
+    /// The partner's identifier.
     let partnerIdentifier = "applovin"
     
-    /// Get the external/official name of the partner.
+    /// The partner's name in a human-friendly version.
     let partnerDisplayName = "AppLovin"
     
-    /// Storage of adapter instances.  Keyed by the request identifier.
-    var adAdapters: [String: PartnerAdAdapter] = [:]
-
     /// Instance of the AppLovin SDK
     static var sdk: ALSdk? {
         didSet {
@@ -40,11 +37,15 @@ final class AppLovinAdapter: ModularPartnerAdapter {
     /// The last value set on `setGDPRConsentStatus(_:)`.
     private var gdprStatus: GDPRConsentStatus = .unknown
 
-    /// Override this method to initialize the partner SDK so that it's ready to request and display ads.
-    /// For simplicity, the current implementation always assumes successes.
-    /// - Parameters:
-    ///   - configuration: The necessary initialization data provided by Helium.
-    ///   - completion: Handler to notify Helium of task completion.
+    /// The designated initializer for the adapter.
+    /// Helium SDK will use this constructor to create instances of conforming types.
+    /// - parameter storage: An object that exposes storage managed by the Helium SDK to the adapter.
+    /// It includes a list of created `PartnerAd` instances. You may ignore this parameter if you don't need it.
+    init(storage: PartnerAdapterStorage) {}
+    
+    /// Does any setup needed before beginning to load ads.
+    /// - parameter configuration: Configuration data for the adapter to set up.
+    /// - parameter completion: Closure to be performed by the adapter when it's done setting up. It should include an error indicating the cause for failure or `nil` if the operation finished successfully.
     func setUp(with configuration: PartnerConfiguration, completion: @escaping (Error?) -> Void) {
         log(.setUpStarted)
         guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
@@ -66,32 +67,30 @@ final class AppLovinAdapter: ModularPartnerAdapter {
                 completion(nil)
             }
             else {
-                let error = self.error(.setUpFailure, description: "AppLovin failed to initialize")
+                let error = self.error(.setUpFailure)
+                self.log(.setUpFailed(error))
                 completion(error)
             }
         }
     }
     
-    /// Compute and return a bid token for the bid request.
-    /// - Parameters:
-    ///   - request: The necessary data associated with the current bid request.
-    ///   - completion: Handler to notify Helium of task completion.
-    func fetchBidderInformation(request: PreBidRequest, completion: @escaping ([String : String]) -> Void) {
-        log(.fetchBidderInfoStarted(request))
-        log(.fetchBidderInfoSucceeded(request))
-        completion([:])
+    /// Fetches bidding tokens needed for the partner to participate in an auction.
+    /// - parameter request: Information about the ad load request.
+    /// - parameter completion: Closure to be performed with the fetched info.
+    func fetchBidderInformation(request: PreBidRequest, completion: @escaping ([String : String]?) -> Void) {
+        completion(nil)
     }
     
-    /// Set GDPR applicability as determined by the Helium SDK.
-    /// - Parameter applies: true if GDPR applies, false otherwise.
+    /// Indicates if GDPR applies or not.
+    /// - parameter applies: `true` if GDPR applies, `false` otherwise.
     func setGDPRApplies(_ applies: Bool) {
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprApplies = applies
         updateGDPRConsent()
    }
     
-    /// Set the GDPR consent status as determined by the Helium SDK.
-    /// - Parameter status: The user's current GDPR consent status.
+    /// Indicates the user's GDPR consent status.
+    /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
     func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
         // Save value and set GDPR using both gdprApplies and gdprStatus
         gdprStatus = status
@@ -102,39 +101,47 @@ final class AppLovinAdapter: ModularPartnerAdapter {
         // Set AppLovin GDPR consent using both gdprApplies and gdprStatus
         if gdprApplies {
             // https://dash.applovin.com/docs/integration#iosPrivacySettings
-            ALPrivacySettings.setHasUserConsent(gdprStatus == .granted)
-            log(.privacyUpdated(setting: "'setHasUserConsent'", value: gdprStatus == .granted))
+            let value = gdprStatus == .granted
+            ALPrivacySettings.setHasUserConsent(value)
+            log(.privacyUpdated(setting: "hasUserConsent", value: value))
         }
     }
 
-    /// Set the COPPA subjectivity as determined by the Helium SDK.
-    /// - Parameter isSubject: True if the user is subject to COPPA, false otherwise.
+    /// Indicates if the user is subject to COPPA or not.
+    /// - parameter isSubject: `true` if the user is subject, `false` otherwise.
     func setUserSubjectToCOPPA(_ isSubject: Bool) {
-        log(.privacyUpdated(setting: "'IsAgeRestrictedUser'", value: isSubject))
         ALPrivacySettings.setIsAgeRestrictedUser(isSubject)
+        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isSubject))
     }
     
-    /// Set the CCPA privacy String as supplied by the Helium SDK.
-    /// - Parameters:
-    ///   - hasGivenConsent: True if the user has given CCPA consent, false otherwise.
-    ///   - privacyString: The CCPA privacy String.
+    /// Indicates the CCPA status both as a boolean and as a IAB US privacy string.
+    /// - parameter hasGivenConsent: A boolean indicating if the user has given consent.
+    /// - parameter privacyString: A IAB-compliant string indicating the CCPA status.
     func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
         // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
-        log(.privacyUpdated(setting: "'DoNotSell'", value: !hasGivenConsent))
-        ALPrivacySettings.setDoNotSell(!hasGivenConsent)
+        let value = !hasGivenConsent
+        ALPrivacySettings.setDoNotSell(value)
+        log(.privacyUpdated(setting: "doNotSell", value: value))
     }
     
-    func makeAdAdapter(request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate) throws -> PartnerAdAdapter {
+    /// Creates a new ad object in charge of communicating with a single partner SDK ad instance.
+    /// Helium SDK calls this method to create a new ad for each new load request. Ad instances are never reused.
+    /// Helium SDK takes care of storing and disposing of ad instances so you don't need to.
+    /// `invalidate()` is called on ads before disposing of them in case partners need to perform any custom logic before the object gets destroyed.
+    /// If for some reason a new ad cannot be provided an error should be thrown.
+    /// - parameter request: Information about the ad load request.
+    /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
+    func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
         guard let sdk = Self.sdk else {
-            throw error(.loadFailure(request), description: "No SDK instance available")
+            throw error(.adCreationFailure(request), description: "No SDK instance available")
         }
         switch request.format {
         case .banner:
-            return AppLovinAdAdapterBanner(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
+            return AppLovinAdapterBannerAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
         case .interstitial:
-            return AppLovinAdAdapterInterstitial(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
+            return AppLovinAdapterInterstitialAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
         case .rewarded:
-            return AppLovinAdAdapterRewarded(sdk: sdk, adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
+            return AppLovinAdapterRewardedAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
         }
     }
 }
