@@ -26,12 +26,15 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerAd {
 
         loadCompletion = completion
 
-        let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
-        banner.adDisplayDelegate = self
-        banner.adLoadDelegate = self
-        self.banner = banner
-        
-        banner.loadNextAd()
+        // AppLovin banner inherits from UIView so we need to instantiate it on the main thread
+        DispatchQueue.main.async { [self] in
+            let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
+            banner.adDisplayDelegate = self
+            banner.adLoadDelegate = self
+            self.banner = banner
+            
+            banner.loadNextAd()
+        }
     }
 
     /// Shows a loaded ad.

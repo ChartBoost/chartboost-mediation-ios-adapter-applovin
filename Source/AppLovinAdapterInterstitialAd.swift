@@ -43,11 +43,14 @@ class AppLovinAdapterInterstitialAd: AppLovinAdapterAd, PartnerAd {
         }
         showCompletion = completion
         
-        let interstitial = ALInterstitialAd(sdk: sdk)
-        interstitial.adDisplayDelegate = self
-        interstitial.adVideoPlaybackDelegate = self
-        interstitial.show(ad)
-        self.interstitial = interstitial
+        // AppLovin makes use of UI-related APIs directly from the thread show() is called, so we need to do it on the main thread
+        DispatchQueue.main.async { [self] in
+            let interstitial = ALInterstitialAd(sdk: sdk)
+            interstitial.adDisplayDelegate = self
+            interstitial.adVideoPlaybackDelegate = self
+            interstitial.show(ad)
+            self.interstitial = interstitial
+        }
     }
 }
 
