@@ -47,9 +47,8 @@ extension AppLovinAdapterRewardedAd {
         super.videoPlaybackEnded(in: ad, atPlaybackPercent: percentPlayed, fullyWatched: wasFullyWatched)
         
         if isEligibleToReward, wasFullyWatched, !hasRewarded {
-            let reward = Reward(amount: nil, label: nil)
-            log(.didReward(reward))
-            delegate?.didReward(self, details: [:], reward: reward) ?? log(.delegateUnavailable)
+            log(.didReward)
+            delegate?.didReward(self, details: [:]) ?? log(.delegateUnavailable)
             hasRewarded = true
         }
     }
