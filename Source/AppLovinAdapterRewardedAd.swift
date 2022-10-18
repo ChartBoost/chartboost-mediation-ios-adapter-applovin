@@ -58,17 +58,18 @@ extension AppLovinAdapterRewardedAd: ALAdRewardDelegate {
     
     func rewardValidationRequest(for ad: ALAd, didSucceedWithResponse response: [AnyHashable : Any]) {
         isEligibleToReward = true
+        log(.delegateCallIgnored)
     }
 
     func rewardValidationRequest(for ad: ALAd, didExceedQuotaWithResponse response: [AnyHashable : Any]) {
-        // NO-OP
+        log(.delegateCallIgnored)
     }
 
     func rewardValidationRequest(for ad: ALAd, wasRejectedWithResponse response: [AnyHashable : Any]) {
-        // NO-OP
+        log(.delegateCallIgnored)
     }
 
     func rewardValidationRequest(for ad: ALAd, didFailWithError responseCode: Int) {
-        // NO-OP
+        log(.delegateCallIgnored)
     }
 }
