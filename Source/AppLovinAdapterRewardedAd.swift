@@ -58,18 +58,19 @@ extension AppLovinAdapterRewardedAd {
 extension AppLovinAdapterRewardedAd: ALAdRewardDelegate {
     
     func rewardValidationRequest(for ad: ALAd, didSucceedWithResponse response: [AnyHashable : Any]) {
+        log("rewardValidationRequestDidSucceed for ad with placement: \(request.partnerPlacement) response: \(response)")
         isEligibleToReward = true
     }
 
     func rewardValidationRequest(for ad: ALAd, didExceedQuotaWithResponse response: [AnyHashable : Any]) {
-        // NO-OP
+        log("rewardValidationRequestDidExceedQuota for ad with placement: \(request.partnerPlacement) response: \(response)")
     }
 
     func rewardValidationRequest(for ad: ALAd, wasRejectedWithResponse response: [AnyHashable : Any]) {
-        // NO-OP
+        log("rewardValidationRequestWasRejected for ad with placement: \(request.partnerPlacement) response: \(response)")
     }
 
     func rewardValidationRequest(for ad: ALAd, didFailWithError responseCode: Int) {
-        // NO-OP
+        log("rewardValidationRequestDidFailWithError for ad with placement: \(request.partnerPlacement) error: \(responseCode)")
     }
 }
