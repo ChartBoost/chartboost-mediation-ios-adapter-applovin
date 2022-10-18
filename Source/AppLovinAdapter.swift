@@ -81,9 +81,9 @@ final class AppLovinAdapter: PartnerAdapter {
     func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
         if applies == true {
             // https://dash.applovin.com/docs/integration#iosPrivacySettings
-            let value = status == .granted
-            ALPrivacySettings.setHasUserConsent(value)
-            log(.privacyUpdated(setting: "hasUserConsent", value: value))
+            let userConsented = status == .granted
+            ALPrivacySettings.setHasUserConsent(userConsented)
+            log(.privacyUpdated(setting: "hasUserConsent", value: userConsented))
         }
     }
 
@@ -99,9 +99,9 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter privacyString: A IAB-compliant string indicating the CCPA status.
     func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
         // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
-        let value = !hasGivenConsent
-        ALPrivacySettings.setDoNotSell(value)
-        log(.privacyUpdated(setting: "doNotSell", value: value))
+        let doNotSell = !hasGivenConsent
+        ALPrivacySettings.setDoNotSell(doNotSell)
+        log(.privacyUpdated(setting: "doNotSell", value: doNotSell))
     }
     
     /// Creates a new ad object in charge of communicating with a single partner SDK ad instance.
