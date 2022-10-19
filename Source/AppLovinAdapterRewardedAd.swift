@@ -47,10 +47,11 @@ extension AppLovinAdapterRewardedAd {
         super.videoPlaybackEnded(in: ad, atPlaybackPercent: percentPlayed, fullyWatched: wasFullyWatched)
         
         if isEligibleToReward, wasFullyWatched, !hasRewarded {
-            let reward = Reward(amount: nil, label: nil)
-            log(.didReward(reward))
-            delegate?.didReward(self, details: [:], reward: reward) ?? log(.delegateUnavailable)
+            log(.didReward)
+            delegate?.didReward(self, details: [:]) ?? log(.delegateUnavailable)
             hasRewarded = true
+        } else {
+            log(.delegateCallIgnored)
         }
     }
 }
@@ -58,19 +59,19 @@ extension AppLovinAdapterRewardedAd {
 extension AppLovinAdapterRewardedAd: ALAdRewardDelegate {
     
     func rewardValidationRequest(for ad: ALAd, didSucceedWithResponse response: [AnyHashable : Any]) {
-        log("rewardValidationRequestDidSucceed for ad with placement: \(request.partnerPlacement) response: \(response)")
         isEligibleToReward = true
+        log(.delegateCallIgnored)
     }
 
     func rewardValidationRequest(for ad: ALAd, didExceedQuotaWithResponse response: [AnyHashable : Any]) {
-        log("rewardValidationRequestDidExceedQuota for ad with placement: \(request.partnerPlacement) response: \(response)")
+        log(.delegateCallIgnored)
     }
 
     func rewardValidationRequest(for ad: ALAd, wasRejectedWithResponse response: [AnyHashable : Any]) {
-        log("rewardValidationRequestWasRejected for ad with placement: \(request.partnerPlacement) response: \(response)")
+        log(.delegateCallIgnored)
     }
 
     func rewardValidationRequest(for ad: ALAd, didFailWithError responseCode: Int) {
-        log("rewardValidationRequestDidFailWithError for ad with placement: \(request.partnerPlacement) error: \(responseCode)")
+        log(.delegateCallIgnored)
     }
 }

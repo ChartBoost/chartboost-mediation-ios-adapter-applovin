@@ -93,7 +93,7 @@ extension AppLovinAdapterInterstitialAd: ALAdDisplayDelegate {
 extension AppLovinAdapterInterstitialAd: ALAdVideoPlaybackDelegate {
     
     func videoPlaybackBegan(in ad: ALAd) {
-        log("videoPlaybackBegan")
+        log(.delegateCallIgnored)
     }
 
     func videoPlaybackEnded(in ad: ALAd, atPlaybackPercent percentPlayed: NSNumber, fullyWatched wasFullyWatched: Bool) {

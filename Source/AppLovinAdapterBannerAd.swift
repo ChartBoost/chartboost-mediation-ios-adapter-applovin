@@ -65,11 +65,11 @@ extension AppLovinAdapterBannerAd: ALAdLoadDelegate {
 extension AppLovinAdapterBannerAd: ALAdDisplayDelegate {
     
     func ad(_ ad: ALAd, wasDisplayedIn view: UIView) {
-        log("wasDisplayedIn")
+        log(.delegateCallIgnored)
     }
 
     func ad(_ ad: ALAd, wasHiddenIn view: UIView) {
-        log("wasHiddenIn")
+        log(.delegateCallIgnored)
     }
 
     func ad(_ ad: ALAd, wasClickedIn view: UIView) {

@@ -30,13 +30,7 @@ final class AppLovinAdapter: PartnerAdapter {
             AppLovinAdapterConfiguration.sync()
         }
     }
-
-    /// The last value set on `setGDPRApplies(_:)`.
-    private var gdprApplies = false
-
-    /// The last value set on `setGDPRConsentStatus(_:)`.
-    private var gdprStatus: GDPRConsentStatus = .unknown
-
+    
     /// The designated initializer for the adapter.
     /// Helium SDK will use this constructor to create instances of conforming types.
     /// - parameter storage: An object that exposes storage managed by the Helium SDK to the adapter.
@@ -81,29 +75,15 @@ final class AppLovinAdapter: PartnerAdapter {
         completion(nil)
     }
     
-    /// Indicates if GDPR applies or not.
-    /// - parameter applies: `true` if GDPR applies, `false` otherwise.
-    func setGDPRApplies(_ applies: Bool) {
-        // Save value and set GDPR using both gdprApplies and gdprStatus
-        gdprApplies = applies
-        updateGDPRConsent()
-   }
-    
-    /// Indicates the user's GDPR consent status.
+    /// Indicates if GDPR applies or not and the user's GDPR consent status.
+    /// - parameter applies: `true` if GDPR applies, `false` if not, `nil` if the publisher has not provided this information.
     /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
-    func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
-        // Save value and set GDPR using both gdprApplies and gdprStatus
-        gdprStatus = status
-        updateGDPRConsent()
-    }
-
-    private func updateGDPRConsent() {
-        // Set AppLovin GDPR consent using both gdprApplies and gdprStatus
-        if gdprApplies {
+    func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
+        if applies == true {
             // https://dash.applovin.com/docs/integration#iosPrivacySettings
-            let value = gdprStatus == .granted
-            ALPrivacySettings.setHasUserConsent(value)
-            log(.privacyUpdated(setting: "hasUserConsent", value: value))
+            let userConsented = status == .granted
+            ALPrivacySettings.setHasUserConsent(userConsented)
+            log(.privacyUpdated(setting: "hasUserConsent", value: userConsented))
         }
     }
 
@@ -119,9 +99,9 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
     func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
         // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
-        let value = !hasGivenConsent
-        ALPrivacySettings.setDoNotSell(value)
-        log(.privacyUpdated(setting: "doNotSell", value: value))
+        let doNotSell = !hasGivenConsent
+        ALPrivacySettings.setDoNotSell(doNotSell)
+        log(.privacyUpdated(setting: "doNotSell", value: doNotSell))
     }
     
     /// Creates a new ad object in charge of communicating with a single partner SDK ad instance.
