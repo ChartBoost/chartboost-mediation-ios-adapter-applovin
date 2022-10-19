@@ -50,6 +50,8 @@ extension AppLovinAdapterRewardedAd {
             log(.didReward)
             delegate?.didReward(self, details: [:]) ?? log(.delegateUnavailable)
             hasRewarded = true
+        } else {
+            log(.delegateCallIgnored)
         }
     }
 }
