@@ -88,16 +88,16 @@ final class AppLovinAdapter: PartnerAdapter {
     }
 
     /// Indicates if the user is subject to COPPA or not.
-    /// - parameter isSubject: `true` if the user is subject, `false` otherwise.
-    func setUserSubjectToCOPPA(_ isSubject: Bool) {
-        ALPrivacySettings.setIsAgeRestrictedUser(isSubject)
-        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isSubject))
+    /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
+    func setCOPPA(isChildDirected: Bool) {
+        ALPrivacySettings.setIsAgeRestrictedUser(isChildDirected)
+        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isChildDirected))
     }
     
     /// Indicates the CCPA status both as a boolean and as an IAB US privacy string.
     /// - parameter hasGivenConsent: A boolean indicating if the user has given consent.
     /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
-    func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
+    func setCCPA(hasGivenConsent: Bool, privacyString: String) {
         // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
         let doNotSell = !hasGivenConsent
         ALPrivacySettings.setDoNotSell(doNotSell)
