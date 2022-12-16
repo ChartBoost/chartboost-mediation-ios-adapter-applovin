@@ -30,14 +30,11 @@ final class AppLovinAdapterRewardedAd: AppLovinAdapterInterstitialAd {
         }
         showCompletion = completion
         
-        // AppLovin makes use of UI-related APIs directly from the thread show() is called, so we need to do it on the main thread
-        DispatchQueue.main.async { [self] in
-            let rewarded = ALIncentivizedInterstitialAd(sdk: sdk)
-            rewarded.adDisplayDelegate = self
-            rewarded.adVideoPlaybackDelegate = self
-            rewarded.show(ad, andNotify: self)
-            self.rewarded = rewarded
-        }
+        let rewarded = ALIncentivizedInterstitialAd(sdk: sdk)
+        rewarded.adDisplayDelegate = self
+        rewarded.adVideoPlaybackDelegate = self
+        rewarded.show(ad, andNotify: self)
+        self.rewarded = rewarded
     }
 }
 
