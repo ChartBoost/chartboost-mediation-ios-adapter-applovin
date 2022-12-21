@@ -13,30 +13,24 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerAd {
     
     /// The partner ad view to display inline. E.g. a banner view.
     /// Should be nil for full-screen ads.
-    var inlineView: UIView? { banner }
-    
-    /// The AppLovin banner ad instance.
-    private var banner: ALAdView?
+    var inlineView: UIView?
     
     /// Loads an ad.
     /// - parameter viewController: The view controller on which the ad will be presented on. Needed on load for some banners.
     /// - parameter completion: Closure to be performed once the ad has been loaded.
     func load(with viewController: UIViewController?, completion: @escaping (Result<PartnerEventDetails, Error>) -> Void) {
         log(.loadStarted)
-
+        
         loadCompletion = completion
-
-        // AppLovin banner inherits from UIView so we need to instantiate it on the main thread
-        DispatchQueue.main.async { [self] in
-            let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
-            banner.adDisplayDelegate = self
-            banner.adLoadDelegate = self
-            self.banner = banner
-            
-            banner.loadNextAd()
-        }
+        
+        let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
+        banner.adDisplayDelegate = self
+        banner.adLoadDelegate = self
+        inlineView = banner
+        
+        banner.loadNextAd()
     }
-
+    
     /// Shows a loaded ad.
     /// It will never get called for banner ads. You may leave the implementation blank for that ad format.
     /// - parameter viewController: The view controller on which the ad will be presented on.
