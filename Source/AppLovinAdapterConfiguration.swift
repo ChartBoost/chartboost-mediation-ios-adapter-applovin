@@ -7,13 +7,11 @@ import AppLovinSDK
 import AdSupport
 
 /// A list of externally configurable properties pertaining to the partner SDK that can be retrieved and set by publishers.
-public class AppLovinAdapterConfiguration {
-    /// The AppLovin SDK instance
-    static var sdk: ALSdk? { AppLovinAdapter.sdk }
-
+@objc public class AppLovinAdapterConfiguration: NSObject {
+    
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
-    public static var testMode: Bool = false {
+    @objc public static var testMode: Bool = false {
         didSet {
             syncTestMode()
         }
@@ -21,16 +19,18 @@ public class AppLovinAdapterConfiguration {
     
     /// Flag that can optionally be set to enable the partner's verbose logging.
     /// Disabled by default.
-    public static var verboseLogging: Bool = false {
+    @objc public static var verboseLogging: Bool = false {
         didSet {
             syncVerboseLogging()
         }
     }
-    
-    /// Append any other properties that publishers can configure.
 }
 
 extension AppLovinAdapterConfiguration {
+    
+    /// The AppLovin SDK instance
+    static var sdk: ALSdk? { AppLovinAdapter.sdk }
+    
     static func sync() {
         syncTestMode()
         syncVerboseLogging()
@@ -50,12 +50,12 @@ extension AppLovinAdapterConfiguration {
         else {
             sdk.settings.testDeviceAdvertisingIdentifiers = []
         }
-        print("The AppLovin SDK's test mode is \(testMode ? "enabled" : "disabled").")
+        print("AppLovin SDK test mode set to \(testMode)")
     }
 
     static func syncVerboseLogging() {
         guard let sdk = Self.sdk else { return }
         sdk.settings.isVerboseLogging = verboseLogging
-        print("The AppLovin SDK's verbose logging is \(verboseLogging ? "enabled" : "disabled").")
+        print("AppLovin SDK verbose logging set to \(verboseLogging)")
     }
 }
