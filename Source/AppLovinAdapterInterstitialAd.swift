@@ -37,7 +37,7 @@ class AppLovinAdapterInterstitialAd: AppLovinAdapterAd, PartnerAd {
     func show(with viewController: UIViewController, completion: @escaping (Result<PartnerEventDetails, Error>) -> Void) {
         log(.showStarted)
         guard let ad = ad else {
-            let error = error(.noAdReadyToShow)
+            let error = error(.showFailureAdNotReady)
             log(.showFailed(error))
             return completion(.failure(error))
         }
@@ -61,7 +61,7 @@ extension AppLovinAdapterInterstitialAd: ALAdLoadDelegate {
     }
 
     func adService(_ adService: ALAdService, didFailToLoadAdWithError code: Int32) {
-        let error = error(.loadFailure, description: "\(code)")
+        let error = error(.loadFailureException, description: "\(code)")
         log(.loadFailed(error))
         loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
         loadCompletion = nil
@@ -95,7 +95,7 @@ extension AppLovinAdapterInterstitialAd: ALAdVideoPlaybackDelegate {
 
     func videoPlaybackEnded(in ad: ALAd, atPlaybackPercent percentPlayed: NSNumber, fullyWatched wasFullyWatched: Bool) {
         if percentPlayed.intValue == 0 && !wasFullyWatched {
-            let error = error(.showFailure, description: "Video playback ended at 0% played.")
+            let error = error(.showFailureVideoPlayerError, description: "Video playback ended at 0% played.")
             log(.showFailed(error))
             showCompletion?(.failure(error)) ?? log(.showResultIgnored)
             showCompletion = nil
