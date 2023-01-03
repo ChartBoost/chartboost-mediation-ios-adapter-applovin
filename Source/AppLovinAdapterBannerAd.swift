@@ -49,7 +49,7 @@ extension AppLovinAdapterBannerAd: ALAdLoadDelegate {
     }
 
     func adService(_ adService: ALAdService, didFailToLoadAdWithError code: Int32) {
-        let error = error(.loadFailureException, description: "\(code)")
+        let error = error(.loadFailureUnknown, description: "\(code)")
         log(.loadFailed(error))
         loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
         loadCompletion = nil

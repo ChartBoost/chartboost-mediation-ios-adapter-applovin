@@ -114,7 +114,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
         guard let sdk = Self.sdk else {
-            throw error(.loadFailurePartnerInstanceNotFound, description: "No SDK instance available")
+            throw error(.loadFailurePartnerInstanceNotFound)
         }
         switch request.format {
         case .banner:
