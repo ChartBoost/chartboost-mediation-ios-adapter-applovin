@@ -44,12 +44,12 @@ final class AppLovinAdapter: PartnerAdapter {
     func setUp(with configuration: PartnerConfiguration, completion: @escaping (Error?) -> Void) {
         log(.setUpStarted)
         guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
-            let error = error(.missingSetUpParameter(key: .sdkKey))
+            let error = error(.initializationFailureInvalidCredentials, description: "Missing \(String.sdkKey)")
             log(.setUpFailed(error))
             return completion(error)
         }
         guard let sdk = ALSdk.shared(withKey: sdkKey) else {
-            let error = error(.setUpFailure)
+            let error = error(.initializationFailureInvalidCredentials, description: "Invalid \(String.sdkKey)")
             log(.setUpFailed(error))
             return completion(error)
         }
@@ -62,7 +62,7 @@ final class AppLovinAdapter: PartnerAdapter {
                 completion(nil)
             }
             else {
-                let error = self.error(.setUpFailure)
+                let error = self.error(.initializationFailureUnknown)
                 self.log(.setUpFailed(error))
                 completion(error)
             }
@@ -114,7 +114,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
         guard let sdk = Self.sdk else {
-            throw error(.adCreationFailure(request), description: "No SDK instance available")
+            throw error(.loadFailurePartnerInstanceNotFound)
         }
         switch request.format {
         case .banner:
@@ -124,7 +124,7 @@ final class AppLovinAdapter: PartnerAdapter {
         case .rewarded:
             return AppLovinAdapterRewardedAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
         @unknown default:
-            throw error(.adFormatNotSupported(request))
+            throw error(.loadFailureUnsupportedAdFormat)
         }
     }
 }

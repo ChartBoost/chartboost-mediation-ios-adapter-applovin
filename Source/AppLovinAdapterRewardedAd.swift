@@ -24,7 +24,7 @@ final class AppLovinAdapterRewardedAd: AppLovinAdapterInterstitialAd {
     override func show(with viewController: UIViewController, completion: @escaping (Result<PartnerEventDetails, Error>) -> Void) {
         log(.showStarted)
         guard let ad = ad else {
-            let error = error(.noAdReadyToShow)
+            let error = error(.showFailureAdNotReady)
             log(.showFailed(error))
             return completion(.failure(error))
         }
