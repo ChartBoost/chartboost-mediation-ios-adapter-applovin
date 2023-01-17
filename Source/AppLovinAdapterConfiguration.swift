@@ -55,7 +55,7 @@ extension AppLovinAdapterConfiguration {
 
     static func syncVerboseLogging() {
         guard let sdk = Self.sdk else { return }
-        sdk.settings.isVerboseLogging = verboseLogging
+        sdk.settings.isVerboseLoggingEnabled = verboseLogging
         print("AppLovin SDK verbose logging set to \(verboseLogging)")
     }
 }
