@@ -8,9 +8,9 @@
 //  ChartboostHeliumAdapterAppLovin
 //
 
-import Foundation
-import HeliumSdk
 import AppLovinSDK
+import ChartboostMediationSDK
+import Foundation
 import UIKit
 
 /// The Helium AppLovin adapter.
