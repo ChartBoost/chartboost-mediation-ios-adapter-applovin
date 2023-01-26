@@ -1,6 +1,6 @@
 # Chartboost Mediation AppLovin Adapter
 
-The Chartboost Mediation AppLovin adapter mediates the AppLovin SDK into the Chartboost Mediation SDK.
+The Chartboost Mediation AppLovin adapter mediates AppLovin via the Chartboost Mediation SDK.
 
 ## Minimum Requirements
 
