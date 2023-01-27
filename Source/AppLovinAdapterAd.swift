@@ -5,7 +5,7 @@
 
 //
 //  AppLovinAdapterAd.swift
-//  ChartboostHeliumAdapterAppLovin
+//  ChartboostMediationAdapterAppLovin
 //
 
 import AppLovinSDK
@@ -13,7 +13,7 @@ import ChartboostMediationSDK
 import Foundation
 import UIKit
 
-/// Base class for Helium AppLovin adapter ads.
+/// Base class for Chartboost Mediation AppLovin adapter ads.
 class AppLovinAdapterAd: NSObject {
     
     /// The partner adapter that created this ad.

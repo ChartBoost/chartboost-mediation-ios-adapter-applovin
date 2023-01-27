@@ -5,7 +5,7 @@
 
 //
 //  AppLovinAdapterConfiguration.swift
-//  ChartboostHeliumAdapterAppLovin
+//  ChartboostMediationAdapterAppLovin
 //
 
 import AppLovinSDK

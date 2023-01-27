@@ -5,7 +5,7 @@
 
 //
 //  AppLovinAdapterBannerAd.swift
-//  ChartboostHeliumAdapterAppLovin
+//  ChartboostMediationAdapterAppLovin
 //
 
 import AppLovinSDK
@@ -13,7 +13,7 @@ import ChartboostMediationSDK
 import Foundation
 import UIKit
 
-/// The Helium AppLovin adapter banner ad.
+/// The Chartboost Mediation AppLovin adapter banner ad.
 final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerAd {
     
     /// The partner ad view to display inline. E.g. a banner view.

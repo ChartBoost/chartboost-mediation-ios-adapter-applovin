@@ -5,7 +5,7 @@
 
 //
 //  AppLovinAdapterRewardedAd.swift
-//  ChartboostHeliumAdapterAppLovin
+//  ChartboostMediationAdapterAppLovin
 //
 
 import AppLovinSDK
@@ -13,7 +13,7 @@ import ChartboostMediationSDK
 import Foundation
 import UIKit
 
-/// The Helium AppLovin adapter rewarded ad.
+/// The Chartboost Mediation AppLovin adapter rewarded ad.
 final class AppLovinAdapterRewardedAd: AppLovinAdapterInterstitialAd {
     
     private var isEligibleToReward = false
