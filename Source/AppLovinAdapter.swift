@@ -60,7 +60,7 @@ final class AppLovinAdapter: PartnerAdapter {
         }
         Self.sdk = sdk
 
-        sdk.mediationProvider = "Helium"
+        sdk.mediationProvider = "Chartboost"
         sdk.initializeSdk { _ in
             if sdk.isInitialized {
                 self.log(.setUpSucceded)
