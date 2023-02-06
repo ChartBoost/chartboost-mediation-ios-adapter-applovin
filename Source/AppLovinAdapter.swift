@@ -127,6 +127,49 @@ final class AppLovinAdapter: PartnerAdapter {
             throw error(.loadFailureUnsupportedAdFormat)
         }
     }
+    
+    /// Maps a partner load error to a Helium error code.
+    /// Helium SDK calls this method when a load completion is called with a partner error.
+    ///
+    /// A default implementation is provided that returns `nil`.
+    /// Only implement if the partner SDK provides its own list of error codes that can be mapped to Helium's.
+    /// If some case cannot be mapped return `nil` to let Helium choose a default error code.
+    func mapLoadError(_ error: Error) -> HeliumError.Code? {
+        switch Int32((error as NSError).code) {
+        case kALErrorCodeSdkDisabled:
+            return .loadFailureAborted
+        case kALErrorCodeNoFill:
+            return .loadFailureNoFill
+        case kALErrorCodeAdRequestNetworkTimeout:
+            return .loadFailureTimeout
+        case kALErrorCodeNotConnectedToInternet:
+            return .loadFailureNoConnectivity
+        case kALErrorCodeAdRequestUnspecifiedError:
+            return .loadFailureUnknown
+        case kALErrorCodeUnableToRenderAd:
+            return .loadFailureInvalidAdMarkup
+        case kALErrorCodeInvalidZone:
+            return .loadFailureUnknown
+        case kALErrorCodeInvalidAdToken:
+            return .loadFailureInvalidAdRequest
+        case kALErrorCodeUnableToPrecacheResources:
+            return .loadFailureOutOfStorage
+        case kALErrorCodeUnableToPrecacheImageResources:
+            return .loadFailureOutOfStorage
+        case kALErrorCodeUnableToPrecacheVideoResources:
+            return .loadFailureOutOfStorage
+        case kALErrorCodeInvalidResponse:
+            return .loadFailureInvalidBidResponse
+        case kALErrorCodeIncentiviziedAdNotPreloaded:
+            return .loadFailureUnknown
+        case kALErrorCodeIncentivizedUnknownServerError:
+            return .loadFailureServerError
+        case kALErrorCodeIncentivizedValidationNetworkTimeout:
+            return .loadFailureTimeout
+        default:
+            return nil
+        }
+    }
 }
 
 /// Convenience extension to access AppLovin credentials from the configuration.
