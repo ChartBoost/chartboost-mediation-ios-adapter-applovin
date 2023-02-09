@@ -80,8 +80,8 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter applies: `true` if GDPR applies, `false` if not, `nil` if the publisher has not provided this information.
     /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
     func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
+        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#consent-and-age-related-flags-in-gdpr-and-other-regions
         if applies == true {
-            // https://dash.applovin.com/docs/integration#iosPrivacySettings
             let userConsented = status == .granted
             ALPrivacySettings.setHasUserConsent(userConsented)
             log(.privacyUpdated(setting: "hasUserConsent", value: userConsented))
@@ -91,6 +91,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// Indicates if the user is subject to COPPA or not.
     /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
     func setCOPPA(isChildDirected: Bool) {
+        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#prohibition-on-ads-to,-and-personal-information-from,-children-and-apps-exclusively-designed-for,-or-exclusively-directed-to,-children
         ALPrivacySettings.setIsAgeRestrictedUser(isChildDirected)
         log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isChildDirected))
     }
@@ -99,6 +100,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter hasGivenConsent: A boolean indicating if the user has given consent.
     /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
     func setCCPA(hasGivenConsent: Bool, privacyString: String) {
+        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#multi-state-consumer-privacy-laws
         // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
         let doNotSell = !hasGivenConsent
         ALPrivacySettings.setDoNotSell(doNotSell)
