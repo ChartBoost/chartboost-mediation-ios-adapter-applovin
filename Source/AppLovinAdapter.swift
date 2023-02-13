@@ -137,7 +137,11 @@ final class AppLovinAdapter: PartnerAdapter {
     /// Only implement if the partner SDK provides its own list of error codes that can be mapped to Chartboost Mediation's.
     /// If some case cannot be mapped return `nil` to let Chartboost Mediation choose a default error code.
     func mapLoadError(_ error: Error) -> ChartboostMediationError.Code? {
-        switch Int32((error as NSError).code) {
+        guard let errorCode = Int32(exactly: (error as NSError).code) else {
+            return nil
+        }
+
+        switch errorCode {
         case kALErrorCodeSdkDisabled:
             return .loadFailureAborted
         case kALErrorCodeNoFill:
