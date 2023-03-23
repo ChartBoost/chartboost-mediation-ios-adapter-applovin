@@ -9,5 +9,8 @@ Adapters are compatible with any Chartboost Mediation SDK version within that ma
 ### 4.11.7.0.0
 - This version of the adapters has been certified with AppLovinSDK 11.7.0.
 
+### 4.11.5.5.0
+- This version of the adapters has been certified with AppLovinSDK 11.5.5.
+
 ### 4.11.5.4.0
 - This version of the adapters has been certified with AppLovinSDK 11.5.4.
