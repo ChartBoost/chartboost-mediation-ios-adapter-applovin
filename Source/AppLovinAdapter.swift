@@ -130,6 +130,7 @@ final class AppLovinAdapter: PartnerAdapter {
         guard !storage.ads.contains(where: { $0.request.partnerPlacement == request.partnerPlacement })
             || request.format == .banner
         else {
+            log("Failed to load ad for already loading placement \(request.partnerPlacement)")
             throw error(.loadFailureLoadInProgress)
         }
         
