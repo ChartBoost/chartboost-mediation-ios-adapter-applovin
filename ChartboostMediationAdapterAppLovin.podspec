@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name        = 'ChartboostMediationAdapterAppLovin'
-  spec.version     = '4.11.5.5.0'
+  spec.version     = '4.11.5.5.1'
   spec.license     = { :type => 'MIT', :file => 'LICENSE.md' }
   spec.homepage    = 'https://github.com/ChartBoost/chartboost-mediation-ios-adapter-applovin'
   spec.authors     = { 'Chartboost' => 'https://www.chartboost.com/' }
