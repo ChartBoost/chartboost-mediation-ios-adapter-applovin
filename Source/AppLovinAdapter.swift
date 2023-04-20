@@ -125,7 +125,7 @@ final class AppLovinAdapter: PartnerAdapter {
             return AppLovinAdapterInterstitialAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
         case .rewarded:
             return AppLovinAdapterRewardedAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
-        @unknown default:
+        default:
             throw error(.loadFailureUnsupportedAdFormat)
         }
     }
