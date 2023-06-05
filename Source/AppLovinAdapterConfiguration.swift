@@ -24,6 +24,15 @@ import AdSupport
             syncVerboseLogging()
         }
     }
+
+    /// Flag that can optionally be set to enable location collection as documented at
+    /// https://dash.applovin.com/documentation/mediation/ios/getting-started/data-passing#location-passing
+    /// Enabled by default.
+    @objc public static var locationCollection: Bool = true {
+        didSet {
+            syncLocationCollection()
+        }
+    }
 }
 
 extension AppLovinAdapterConfiguration {
@@ -34,6 +43,7 @@ extension AppLovinAdapterConfiguration {
     static func sync() {
         syncTestMode()
         syncVerboseLogging()
+        syncLocationCollection()
     }
 
     static func syncTestMode() {
@@ -57,5 +67,11 @@ extension AppLovinAdapterConfiguration {
         guard let sdk = Self.sdk else { return }
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
         print("AppLovin SDK verbose logging set to \(verboseLogging)")
+    }
+
+    static func syncLocationCollection() {
+        guard let sdk = Self.sdk else { return }
+        sdk.settings.isLocationCollectionEnabled = locationCollection
+        print("AppLovin SDK location collection set to \(locationCollection)")
     }
 }
