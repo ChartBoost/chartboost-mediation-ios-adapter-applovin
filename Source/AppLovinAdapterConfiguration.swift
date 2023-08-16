@@ -5,10 +5,13 @@
 
 import AppLovinSDK
 import AdSupport
+import os.log
 
 /// A list of externally configurable properties pertaining to the partner SDK that can be retrieved and set by publishers.
 @objc public class AppLovinAdapterConfiguration: NSObject {
     
+    private static var log = OSLog(subsystem: "com.chartboost.mediation.adapter.applovin", category: "Configuration")
+
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
     @objc public static var testMode: Bool = false {
@@ -51,7 +54,9 @@ extension AppLovinAdapterConfiguration {
         if testMode {
             let idfa = ASIdentifierManager.shared().advertisingIdentifier
             if idfa.uuidString == "00000000-0000-0000-0000-000000000000" {
-                print("Invalid IDFA set for AppLovin test mode. Check user privacy settings.")
+                if #available(iOS 12.0, *) {
+                    os_log(.info, log: log, "Invalid IDFA set for AppLovin test mode. Check user privacy settings.")
+                }
             }
             else {
                 sdk.settings.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
@@ -60,18 +65,24 @@ extension AppLovinAdapterConfiguration {
         else {
             sdk.settings.testDeviceAdvertisingIdentifiers = []
         }
-        print("AppLovin SDK test mode set to \(testMode)")
+        if #available(iOS 12.0, *) {
+            os_log(.debug, log: log, "AppLovin SDK test mode set to %{public}s", testMode ? "true" : "false")
+        }
     }
 
     static func syncVerboseLogging() {
         guard let sdk = Self.sdk else { return }
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
-        print("AppLovin SDK verbose logging set to \(verboseLogging)")
+        if #available(iOS 12.0, *) {
+            os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", verboseLogging ? "true" : "false")
+        }
     }
 
     static func syncLocationCollection() {
         guard let sdk = Self.sdk else { return }
         sdk.settings.isLocationCollectionEnabled = locationCollection
-        print("AppLovin SDK location collection set to \(locationCollection)")
+        if #available(iOS 12.0, *) {
+            os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", locationCollection ? "true" : "false")
+        }
     }
 }
