@@ -10,7 +10,7 @@ import os.log
 /// A list of externally configurable properties pertaining to the partner SDK that can be retrieved and set by publishers.
 @objc public class AppLovinAdapterConfiguration: NSObject {
     
-    private static var log = OSLog(subsystem: "com.chartboost.mediation.adapter.applovin", category: "Configuration")
+    private static let log = OSLog(subsystem: "com.chartboost.mediation.adapter.applovin", category: "Configuration")
 
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
@@ -66,7 +66,7 @@ extension AppLovinAdapterConfiguration {
             sdk.settings.testDeviceAdvertisingIdentifiers = []
         }
         if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK test mode set to %{public}s", testMode ? "true" : "false")
+            os_log(.debug, log: log, "AppLovin SDK test mode set to %{public}s", "\(testMode)")
         }
     }
 
@@ -74,7 +74,7 @@ extension AppLovinAdapterConfiguration {
         guard let sdk = Self.sdk else { return }
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
         if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", verboseLogging ? "true" : "false")
+            os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", "\(verboseLogging)")
         }
     }
 
@@ -82,7 +82,7 @@ extension AppLovinAdapterConfiguration {
         guard let sdk = Self.sdk else { return }
         sdk.settings.isLocationCollectionEnabled = locationCollection
         if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", locationCollection ? "true" : "false")
+            os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", "\(locationCollection)")
         }
     }
 }
