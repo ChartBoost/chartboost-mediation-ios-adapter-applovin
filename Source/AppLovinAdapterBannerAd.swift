@@ -20,10 +20,17 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerAd {
     /// - parameter completion: Closure to be performed once the ad has been loaded.
     func load(with viewController: UIViewController?, completion: @escaping (Result<PartnerEventDetails, Error>) -> Void) {
         log(.loadStarted)
+
+        // Fail if we cannot fit a fixed size banner in the requested size.
+        guard let size = fixedBannerSize(for: request.size ?? IABStandardAdSize) else {
+            let error = error(.loadFailureInvalidBannerSize)
+            log(.loadFailed(error))
+            return completion(.failure(error))
+        }
         
         loadCompletion = completion
-        
-        let banner = ALAdView(sdk: sdk, size: .from(size: request.size), zoneIdentifier: request.partnerPlacement)
+
+        let banner = ALAdView(sdk: sdk, size: size.partnerSize, zoneIdentifier: request.partnerPlacement)
         banner.adDisplayDelegate = self
         banner.adLoadDelegate = self
         inlineView = banner
@@ -44,7 +51,14 @@ extension AppLovinAdapterBannerAd: ALAdLoadDelegate {
     
     func adService(_ adService: ALAdService, didLoad ad: ALAd) {
         log(.loadSucceeded)
-        loadCompletion?(.success([:])) ?? log(.loadResultIgnored)
+
+        var partnerDetails: [String: String] = [:]
+        if let loadedSize = fixedBannerSize(for: request.size ?? IABStandardAdSize) {
+            partnerDetails["bannerWidth"] = "\(loadedSize.size.width)"
+            partnerDetails["bannerHeight"] = "\(loadedSize.size.height)"
+            partnerDetails["bannerType"] = "0" // Fixed banner
+        }
+        loadCompletion?(.success(partnerDetails)) ?? log(.loadResultIgnored)
         loadCompletion = nil
     }
 
@@ -72,18 +86,23 @@ extension AppLovinAdapterBannerAd: ALAdDisplayDelegate {
     }
 }
 
-extension ALAdSize {
-    static func from(size: CGSize?) -> ALAdSize {
-        let height = size?.height ?? 50
-        switch height {
-        case 50...89:
-            return .banner
-        case 90...249:
-            return .leader
-        case 250...:
-            return .mrec
-        default:
-            return .banner
+// MARK: - Helpers
+extension AppLovinAdapterBannerAd {
+    private func fixedBannerSize(for requestedSize: CGSize) -> (size: CGSize, partnerSize: ALAdSize)? {
+        let sizes: [(size: CGSize, partnerSize: ALAdSize)] = [
+            (size: IABLeaderboardAdSize, partnerSize: .leader),
+            (size: IABMediumAdSize, partnerSize: .mrec),
+            (size: IABStandardAdSize, partnerSize: .banner)
+        ]
+        // Find the largest size that can fit in the requested size.
+        for (size, partnerSize) in sizes {
+            // If height is 0, the pub has requested an ad of any height, so only the width matters.
+            if requestedSize.width >= size.width &&
+                (size.height == 0 || requestedSize.height >= size.height) {
+                return (size, partnerSize)
+            }
         }
+        // The requested size cannot fit any fixed size banners.
+        return nil
     }
 }
