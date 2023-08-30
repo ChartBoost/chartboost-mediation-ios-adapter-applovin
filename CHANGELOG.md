@@ -5,10 +5,10 @@ Adapters are compatible with any Chartboost Mediation SDK version within that ma
 
 ### 4.11.11.0.1
 - Add support for Adaptive Banners.
-- No longer performing console logging on iOS 11.
 - This version of the adapters has been certified with AppLovinSDK 11.11.0.
 
 ### 4.11.11.0.0
+- No longer performing console logging on iOS 11.
 - This version of the adapters has been certified with AppLovinSDK 11.11.0.
 
 ### 4.11.10.0.0
