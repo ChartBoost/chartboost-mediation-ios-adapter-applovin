@@ -118,6 +118,7 @@ final class AppLovinAdapter: PartnerAdapter {
         guard let sdk = Self.sdk else {
             throw error(.loadFailurePartnerInstanceNotFound)
         }
+        // This partner supports multiple loads for the same partner placement.
         switch request.format {
         case .banner:
             return AppLovinAdapterBannerAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
