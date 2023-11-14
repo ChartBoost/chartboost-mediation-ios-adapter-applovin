@@ -4,6 +4,7 @@ Note the first digit of every adapter version corresponds to the major version o
 Adapters are compatible with any Chartboost Mediation SDK version within that major version.
 
 ### 4.12.0.0.0
+- The minimum deployment target compatible with this adapter is now iOS 11.
 - This version of the adapter has been certified with AppLovinSDK 12.0.0.
 
 ### 4.11.11.0.1
