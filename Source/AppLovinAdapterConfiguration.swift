@@ -43,6 +43,7 @@ extension AppLovinAdapterConfiguration {
     /// The AppLovin SDK instance
     static var sdk: ALSdk? { AppLovinAdapter.sdk }
     
+    
     static func sync() {
         syncTestMode()
         syncVerboseLogging()
@@ -50,7 +51,6 @@ extension AppLovinAdapterConfiguration {
     }
 
     static func syncTestMode() {
-        guard let sdk = Self.sdk else { return }
         if testMode {
             let idfa = ASIdentifierManager.shared().advertisingIdentifier
             if idfa.uuidString == "00000000-0000-0000-0000-000000000000" {
@@ -58,12 +58,6 @@ extension AppLovinAdapterConfiguration {
                     os_log(.info, log: log, "Invalid IDFA set for AppLovin test mode. Check user privacy settings.")
                 }
             }
-            else {
-                sdk.settings.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
-            }
-        }
-        else {
-            sdk.settings.testDeviceAdvertisingIdentifiers = []
         }
         if #available(iOS 12.0, *) {
             os_log(.debug, log: log, "AppLovin SDK test mode set to %{public}s", "\(testMode)")

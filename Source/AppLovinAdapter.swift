@@ -7,6 +7,9 @@ import AppLovinSDK
 import ChartboostMediationSDK
 import Foundation
 import UIKit
+import AdSupport
+import os.log
+
 
 /// The Chartboost Mediation AppLovin adapter.
 final class AppLovinAdapter: PartnerAdapter {
@@ -48,25 +51,34 @@ final class AppLovinAdapter: PartnerAdapter {
             log(.setUpFailed(error))
             return completion(error)
         }
-        guard let sdk = ALSdk.shared(withKey: sdkKey) else {
-            let error = error(.initializationFailureInvalidCredentials, description: "Invalid \(String.sdkKey)")
-            log(.setUpFailed(error))
-            return completion(error)
-        }
-        Self.sdk = sdk
-
-        sdk.mediationProvider = "Chartboost"
-        sdk.initializeSdk { _ in
-            if sdk.isInitialized {
-                self.log(.setUpSucceded)
-                completion(nil)
-            }
+        
+        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) {builder in
+            builder.mediationProvider = "Chartboost"
+            if AppLovinAdapterConfiguration.testMode {
+                let idfa = ASIdentifierManager.shared().advertisingIdentifier
+                    if idfa.uuidString != "00000000-0000-0000-0000-000000000000" {
+                        builder.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
+                    }
+                }
             else {
-                let error = self.error(.initializationFailureUnknown)
-                self.log(.setUpFailed(error))
-                completion(error)
-            }
-        }
+                        builder.testDeviceAdvertisingIdentifiers = []
+                }
+           }
+        
+        ALSdk.shared()?.initialize(with: initConfig){ sdkConfig in
+               if ALSdk.shared()?.isInitialized == true {
+                       self.log(.setUpSucceded)
+                       completion(nil)
+                   }
+               else {
+                       let error = self.error(.initializationFailureUnknown)
+                       self.log(.setUpFailed(error))
+                       completion(error)
+                   }
+           }
+    
+        Self.sdk = ALSdk.shared().self
+
     }
     
     /// Fetches bidding tokens needed for the partner to participate in an auction.
