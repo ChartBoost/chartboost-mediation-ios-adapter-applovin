@@ -14,11 +14,7 @@ import os.log
 
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
-    @objc public static var testMode: Bool = false {
-        didSet {
-            syncTestMode()
-        }
-    }
+    @objc public static var testMode: Bool = false
     
     /// Flag that can optionally be set to enable the partner's verbose logging.
     /// Disabled by default.
