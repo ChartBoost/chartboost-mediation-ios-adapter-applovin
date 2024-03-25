@@ -27,7 +27,11 @@ final class AppLovinAdapter: PartnerAdapter {
     let partnerDisplayName = "AppLovin"
     
     /// Instance of the AppLovin SDK
-    static var sdk = ALSdk.shared()
+    static var sdk: ALSdk? {
+        didSet {
+            AppLovinAdapterConfiguration.sync()
+        }
+    }
     
     /// The designated initializer for the adapter.
     /// Chartboost Mediation SDK will use this constructor to create instances of conforming types.
@@ -49,31 +53,31 @@ final class AppLovinAdapter: PartnerAdapter {
             builder.mediationProvider = "Chartboost"
             if AppLovinAdapterConfiguration.testMode {
                 let idfa = ASIdentifierManager.shared().advertisingIdentifier
-                    if idfa.uuidString != "00000000-0000-0000-0000-000000000000" {
-                        builder.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
-                    }
+                if idfa.uuidString != "00000000-0000-0000-0000-000000000000" {
+                    builder.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
                 }
-                else {
-                        builder.testDeviceAdvertisingIdentifiers = []
-                }
+            }
+            else {
+                builder.testDeviceAdvertisingIdentifiers = []
+            }
         }
         
         guard let sdk = ALSdk.shared() else {
-            let error = error(.initializationFailureInvalidCredentials, description: "Invalid \(String.sdkKey)")
+            let error = error(.initializationFailureUnknown, description: "ALSdk.shared() returned a nil value.")
             self.log(.setUpFailed(error))
             completion(error)
             return completion(error)
         }
         
-        sdk.initialize(with: initConfig){sdkConfig in
-               if ALSdk.shared()?.isInitialized == true {
-                       self.log(.setUpSucceded)
-                       completion(nil)
+        sdk.initialize(with: initConfig){ sdkConfig in
+               if sdk.isInitialized {
+                   self.log(.setUpSucceded)
+                   completion(nil)
                }
                else {
-                       let error = self.error(.initializationFailureUnknown)
-                       self.log(.setUpFailed(error))
-                       completion(error)
+                   let error = self.error(.initializationFailureUnknown)
+                   self.log(.setUpFailed(error))
+                   completion(error)
                }
         }
     
