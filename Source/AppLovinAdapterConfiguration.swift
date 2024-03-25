@@ -42,13 +42,6 @@ extension AppLovinAdapterConfiguration {
     
     /// The AppLovin SDK instance
     static var sdk: ALSdk? { AppLovinAdapter.sdk }
-    
-    
-    static func sync() {
-        syncTestMode()
-        syncVerboseLogging()
-        syncLocationCollection()
-    }
 
     static func syncTestMode() {
         if testMode {

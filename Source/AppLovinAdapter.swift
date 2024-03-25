@@ -8,8 +8,6 @@ import ChartboostMediationSDK
 import Foundation
 import UIKit
 import AdSupport
-import os.log
-
 
 /// The Chartboost Mediation AppLovin adapter.
 final class AppLovinAdapter: PartnerAdapter {
@@ -29,11 +27,7 @@ final class AppLovinAdapter: PartnerAdapter {
     let partnerDisplayName = "AppLovin"
     
     /// Instance of the AppLovin SDK
-    static var sdk: ALSdk? {
-        didSet {
-            AppLovinAdapterConfiguration.sync()
-        }
-    }
+    static var sdk = ALSdk.shared()
     
     /// The designated initializer for the adapter.
     /// Chartboost Mediation SDK will use this constructor to create instances of conforming types.
@@ -51,7 +45,6 @@ final class AppLovinAdapter: PartnerAdapter {
             log(.setUpFailed(error))
             return completion(error)
         }
-        
         let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) {builder in
             builder.mediationProvider = "Chartboost"
             if AppLovinAdapterConfiguration.testMode {
@@ -60,24 +53,31 @@ final class AppLovinAdapter: PartnerAdapter {
                         builder.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
                     }
                 }
-            else {
+                else {
                         builder.testDeviceAdvertisingIdentifiers = []
                 }
-           }
+        }
         
-        ALSdk.shared()?.initialize(with: initConfig){ sdkConfig in
+        guard let sdk = ALSdk.shared() else {
+            let error = error(.initializationFailureInvalidCredentials, description: "Invalid \(String.sdkKey)")
+            self.log(.setUpFailed(error))
+            completion(error)
+            return completion(error)
+        }
+        
+        sdk.initialize(with: initConfig){sdkConfig in
                if ALSdk.shared()?.isInitialized == true {
                        self.log(.setUpSucceded)
                        completion(nil)
-                   }
+               }
                else {
                        let error = self.error(.initializationFailureUnknown)
                        self.log(.setUpFailed(error))
                        completion(error)
-                   }
-           }
+               }
+        }
     
-        Self.sdk = ALSdk.shared().self
+        Self.sdk = sdk
 
     }
     
