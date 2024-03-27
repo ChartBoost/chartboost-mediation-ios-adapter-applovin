@@ -14,11 +14,7 @@ import os.log
 
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
-    @objc public static var testMode: Bool = false {
-        didSet {
-            syncTestMode()
-        }
-    }
+    @objc public static var testMode: Bool = false
     
     /// Flag that can optionally be set to enable the partner's verbose logging.
     /// Disabled by default.
@@ -44,30 +40,8 @@ extension AppLovinAdapterConfiguration {
     static var sdk: ALSdk? { AppLovinAdapter.sdk }
     
     static func sync() {
-        syncTestMode()
         syncVerboseLogging()
         syncLocationCollection()
-    }
-
-    static func syncTestMode() {
-        guard let sdk = Self.sdk else { return }
-        if testMode {
-            let idfa = ASIdentifierManager.shared().advertisingIdentifier
-            if idfa.uuidString == "00000000-0000-0000-0000-000000000000" {
-                if #available(iOS 12.0, *) {
-                    os_log(.info, log: log, "Invalid IDFA set for AppLovin test mode. Check user privacy settings.")
-                }
-            }
-            else {
-                sdk.settings.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
-            }
-        }
-        else {
-            sdk.settings.testDeviceAdvertisingIdentifiers = []
-        }
-        if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK test mode set to %{public}s", "\(testMode)")
-        }
     }
 
     static func syncVerboseLogging() {

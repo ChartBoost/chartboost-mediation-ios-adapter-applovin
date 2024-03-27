@@ -7,6 +7,7 @@ import AppLovinSDK
 import ChartboostMediationSDK
 import Foundation
 import UIKit
+import AdSupport
 
 /// The Chartboost Mediation AppLovin adapter.
 final class AppLovinAdapter: PartnerAdapter {
@@ -17,7 +18,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// The version of the adapter.
     /// It should have either 5 or 6 digits separated by periods, where the first digit is Chartboost Mediation SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
     /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    let adapterVersion = "4.12.2.0.0"
+    let adapterVersion = "4.12.3.0.0"
     
     /// The partner's unique identifier.
     let partnerIdentifier = "applovin"
@@ -48,25 +49,40 @@ final class AppLovinAdapter: PartnerAdapter {
             log(.setUpFailed(error))
             return completion(error)
         }
-        guard let sdk = ALSdk.shared(withKey: sdkKey) else {
-            let error = error(.initializationFailureInvalidCredentials, description: "Invalid \(String.sdkKey)")
-            log(.setUpFailed(error))
-            return completion(error)
-        }
-        Self.sdk = sdk
-
-        sdk.mediationProvider = "Chartboost"
-        sdk.initializeSdk { _ in
-            if sdk.isInitialized {
-                self.log(.setUpSucceded)
-                completion(nil)
+        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) {builder in
+            builder.mediationProvider = "Chartboost"
+            if AppLovinAdapterConfiguration.testMode {
+                let idfa = ASIdentifierManager.shared().advertisingIdentifier
+                if idfa.uuidString != "00000000-0000-0000-0000-000000000000" {
+                    builder.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
+                }
             }
             else {
-                let error = self.error(.initializationFailureUnknown)
-                self.log(.setUpFailed(error))
-                completion(error)
+                builder.testDeviceAdvertisingIdentifiers = []
             }
         }
+        
+        guard let sdk = ALSdk.shared() else {
+            let error = error(.initializationFailureUnknown, description: "ALSdk.shared() returned a nil value.")
+            self.log(.setUpFailed(error))
+            completion(error)
+            return completion(error)
+        }
+        
+        sdk.initialize(with: initConfig){ sdkConfig in
+               if sdk.isInitialized {
+                   self.log(.setUpSucceded)
+                   completion(nil)
+               }
+               else {
+                   let error = self.error(.initializationFailureUnknown)
+                   self.log(.setUpFailed(error))
+                   completion(error)
+               }
+        }
+    
+        Self.sdk = sdk
+
     }
     
     /// Fetches bidding tokens needed for the partner to participate in an auction.
