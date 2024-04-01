@@ -27,11 +27,7 @@ final class AppLovinAdapter: PartnerAdapter {
     let partnerDisplayName = "AppLovin"
     
     /// Instance of the AppLovin SDK
-    static var sdk: ALSdk? {
-        didSet {
-            AppLovinAdapterConfiguration.sync()
-        }
-    }
+    static var sdk: ALSdk = ALSdk.shared()
     
     /// The designated initializer for the adapter.
     /// Chartboost Mediation SDK will use this constructor to create instances of conforming types.
@@ -61,22 +57,20 @@ final class AppLovinAdapter: PartnerAdapter {
                 builder.testDeviceAdvertisingIdentifiers = []
             }
         }
-        
-        let sdk = ALSdk.shared()
 
-        sdk.initialize(with: initConfig) { sdkConfig in
-               if sdk.isInitialized {
-                   self.log(.setUpSucceded)
-                   completion(nil)
-               }
-               else {
-                   let error = self.error(.initializationFailureUnknown)
-                   self.log(.setUpFailed(error))
-                   completion(error)
-               }
+        Self.sdk.initialize(with: initConfig) { sdkConfig in
+            if Self.sdk.isInitialized {
+               self.log(.setUpSucceded)
+               completion(nil)
+           }
+           else {
+               let error = self.error(.initializationFailureUnknown)
+               self.log(.setUpFailed(error))
+               completion(error)
+           }
         }
     
-        Self.sdk = sdk
+        AppLovinAdapterConfiguration.sync()
     }
     
     /// Fetches bidding tokens needed for the partner to participate in an auction.
@@ -125,9 +119,8 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter request: Information about the ad load request.
     /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
-        guard let sdk = Self.sdk else {
-            throw error(.loadFailurePartnerInstanceNotFound)
-        }
+        let sdk = Self.sdk
+
         // This partner supports multiple loads for the same partner placement.
         switch request.format {
         case .banner:
