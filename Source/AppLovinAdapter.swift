@@ -44,45 +44,38 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter completion: Closure to be performed by the adapter when it's done setting up. It should include an error indicating the cause for failure or `nil` if the operation finished successfully.
     func setUp(with configuration: PartnerConfiguration, completion: @escaping (Error?) -> Void) {
         log(.setUpStarted)
-        guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
-            let error = error(.initializationFailureInvalidCredentials, description: "Missing \(String.sdkKey)")
-            log(.setUpFailed(error))
-            return completion(error)
-        }
-        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) {builder in
-            builder.mediationProvider = "Chartboost"
-            if AppLovinAdapterConfiguration.testMode {
-                let idfa = ASIdentifierManager.shared().advertisingIdentifier
-                if idfa.uuidString != "00000000-0000-0000-0000-000000000000" {
-                    builder.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
-                }
-            }
-            else {
-                builder.testDeviceAdvertisingIdentifiers = []
-            }
-        }
-        
+
         guard let sdk = ALSdk.shared() else {
             let error = error(.initializationFailureUnknown, description: "ALSdk.shared() returned a nil value.")
             self.log(.setUpFailed(error))
             completion(error)
             return completion(error)
         }
-        
-        sdk.initialize(with: initConfig){ sdkConfig in
-               if sdk.isInitialized {
-                   self.log(.setUpSucceded)
-                   completion(nil)
-               }
-               else {
-                   let error = self.error(.initializationFailureUnknown)
-                   self.log(.setUpFailed(error))
-                   completion(error)
-               }
-        }
-    
-        Self.sdk = sdk
 
+        sdk.mediationProvider = "Chartboost"
+        if AppLovinAdapterConfiguration.testMode {
+            let idfa = ASIdentifierManager.shared().advertisingIdentifier
+            if idfa.uuidString != "00000000-0000-0000-0000-000000000000" {
+                sdk.settings.testDeviceAdvertisingIdentifiers = [idfa.uuidString]
+            }
+        }
+        else {
+            sdk.settings.testDeviceAdvertisingIdentifiers = []
+        }
+
+        sdk.initializeSdk { sdkConfig in
+            if sdk.isInitialized {
+                self.log(.setUpSucceded)
+                completion(nil)
+            }
+            else {
+                let error = self.error(.initializationFailureUnknown)
+                self.log(.setUpFailed(error))
+                completion(error)
+            }
+        }
+
+        Self.sdk = sdk
     }
     
     /// Fetches bidding tokens needed for the partner to participate in an auction.
