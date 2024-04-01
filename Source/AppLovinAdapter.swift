@@ -49,7 +49,7 @@ final class AppLovinAdapter: PartnerAdapter {
             log(.setUpFailed(error))
             return completion(error)
         }
-        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) {builder in
+        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) { builder in
             builder.mediationProvider = "Chartboost"
             if AppLovinAdapterConfiguration.testMode {
                 let idfa = ASIdentifierManager.shared().advertisingIdentifier
@@ -62,14 +62,9 @@ final class AppLovinAdapter: PartnerAdapter {
             }
         }
         
-        guard let sdk = ALSdk.shared() else {
-            let error = error(.initializationFailureUnknown, description: "ALSdk.shared() returned a nil value.")
-            self.log(.setUpFailed(error))
-            completion(error)
-            return completion(error)
-        }
-        
-        sdk.initialize(with: initConfig){ sdkConfig in
+        let sdk = ALSdk.shared()
+
+        sdk.initialize(with: initConfig) { sdkConfig in
                if sdk.isInitialized {
                    self.log(.setUpSucceded)
                    completion(nil)
@@ -82,7 +77,6 @@ final class AppLovinAdapter: PartnerAdapter {
         }
     
         Self.sdk = sdk
-
     }
     
     /// Fetches bidding tokens needed for the partner to participate in an auction.
