@@ -37,15 +37,14 @@ import os.log
 extension AppLovinAdapterConfiguration {
     
     /// The AppLovin SDK instance
-    static var sdk: ALSdk? { AppLovinAdapter.sdk }
-    
+    static let sdk: ALSdk = ALSdk.shared()
+
     static func sync() {
         syncVerboseLogging()
         syncLocationCollection()
     }
 
     static func syncVerboseLogging() {
-        guard let sdk = Self.sdk else { return }
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
         if #available(iOS 12.0, *) {
             os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", "\(verboseLogging)")
@@ -53,7 +52,6 @@ extension AppLovinAdapterConfiguration {
     }
 
     static func syncLocationCollection() {
-        guard let sdk = Self.sdk else { return }
         sdk.settings.isLocationCollectionEnabled = locationCollection
         if #available(iOS 12.0, *) {
             os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", "\(locationCollection)")
