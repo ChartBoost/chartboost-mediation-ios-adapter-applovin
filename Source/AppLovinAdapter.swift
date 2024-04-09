@@ -18,7 +18,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// The version of the adapter.
     /// It should have either 5 or 6 digits separated by periods, where the first digit is Chartboost Mediation SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
     /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    let adapterVersion = "4.12.3.0.0"
+    let adapterVersion = "4.12.4.0.0"
     
     /// The partner's unique identifier.
     let partnerIdentifier = "applovin"
@@ -27,12 +27,8 @@ final class AppLovinAdapter: PartnerAdapter {
     let partnerDisplayName = "AppLovin"
     
     /// Instance of the AppLovin SDK
-    static var sdk: ALSdk? {
-        didSet {
-            AppLovinAdapterConfiguration.sync()
-        }
-    }
-    
+    let sdk: ALSdk = ALSdk.shared()
+
     /// The designated initializer for the adapter.
     /// Chartboost Mediation SDK will use this constructor to create instances of conforming types.
     /// - parameter storage: An object that exposes storage managed by the Chartboost Mediation SDK to the adapter.
@@ -49,7 +45,7 @@ final class AppLovinAdapter: PartnerAdapter {
             log(.setUpFailed(error))
             return completion(error)
         }
-        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) {builder in
+        let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) { builder in
             builder.mediationProvider = "Chartboost"
             if AppLovinAdapterConfiguration.testMode {
                 let idfa = ASIdentifierManager.shared().advertisingIdentifier
@@ -61,28 +57,20 @@ final class AppLovinAdapter: PartnerAdapter {
                 builder.testDeviceAdvertisingIdentifiers = []
             }
         }
-        
-        guard let sdk = ALSdk.shared() else {
-            let error = error(.initializationFailureUnknown, description: "ALSdk.shared() returned a nil value.")
-            self.log(.setUpFailed(error))
-            completion(error)
-            return completion(error)
-        }
-        
-        sdk.initialize(with: initConfig){ sdkConfig in
-               if sdk.isInitialized {
-                   self.log(.setUpSucceded)
-                   completion(nil)
-               }
-               else {
-                   let error = self.error(.initializationFailureUnknown)
-                   self.log(.setUpFailed(error))
-                   completion(error)
-               }
+
+        sdk.initialize(with: initConfig) { sdkConfig in
+            if self.sdk.isInitialized {
+                self.log(.setUpSucceded)
+                completion(nil)
+            }
+            else {
+                let error = self.error(.initializationFailureUnknown)
+                self.log(.setUpFailed(error))
+                completion(error)
+            }
         }
     
-        Self.sdk = sdk
-
+        AppLovinAdapterConfiguration.sync()
     }
     
     /// Fetches bidding tokens needed for the partner to participate in an auction.
@@ -131,9 +119,6 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter request: Information about the ad load request.
     /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
-        guard let sdk = Self.sdk else {
-            throw error(.loadFailurePartnerInstanceNotFound)
-        }
         // This partner supports multiple loads for the same partner placement.
         switch request.format {
         case .banner:
