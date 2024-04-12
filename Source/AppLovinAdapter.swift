@@ -21,7 +21,7 @@ final class AppLovinAdapter: PartnerAdapter {
     let adapterVersion = "4.12.4.0.0"
     
     /// The partner's unique identifier.
-    let partnerIdentifier = "applovin"
+    let partnerID = "applovin"
     
     /// The human-friendly partner name.
     let partnerDisplayName = "AppLovin"
@@ -38,12 +38,12 @@ final class AppLovinAdapter: PartnerAdapter {
     /// Does any setup needed before beginning to load ads.
     /// - parameter configuration: Configuration data for the adapter to set up.
     /// - parameter completion: Closure to be performed by the adapter when it's done setting up. It should include an error indicating the cause for failure or `nil` if the operation finished successfully.
-    func setUp(with configuration: PartnerConfiguration, completion: @escaping (Error?) -> Void) {
+    func setUp(with configuration: PartnerConfiguration, completion: @escaping (Result<PartnerDetails, Error>) -> Void) {
         log(.setUpStarted)
         guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
             let error = error(.initializationFailureInvalidCredentials, description: "Missing \(String.sdkKey)")
             log(.setUpFailed(error))
-            return completion(error)
+            return completion(.failure(error))
         }
         let initConfig = ALSdkInitializationConfiguration(sdkKey: sdkKey) { builder in
             builder.mediationProvider = "Chartboost"
@@ -61,12 +61,12 @@ final class AppLovinAdapter: PartnerAdapter {
         sdk.initialize(with: initConfig) { sdkConfig in
             if self.sdk.isInitialized {
                 self.log(.setUpSucceded)
-                completion(nil)
+                completion(.success([:]))
             }
             else {
                 let error = self.error(.initializationFailureUnknown)
                 self.log(.setUpFailed(error))
-                completion(error)
+                completion(.failure(error))
             }
         }
     
@@ -76,8 +76,9 @@ final class AppLovinAdapter: PartnerAdapter {
     /// Fetches bidding tokens needed for the partner to participate in an auction.
     /// - parameter request: Information about the ad load request.
     /// - parameter completion: Closure to be performed with the fetched info.
-    func fetchBidderInformation(request: PreBidRequest, completion: @escaping ([String : String]?) -> Void) {
-        completion(nil)
+    func fetchBidderInformation(request: PartnerAdPreBidRequest, completion: @escaping (Result<[String : String], Error>) -> Void) {
+        log(.fetchBidderInfoNotSupported)
+        completion(.success([:]))
     }
     
     /// Indicates if GDPR applies or not and the user's GDPR consent status.
@@ -121,19 +122,14 @@ final class AppLovinAdapter: PartnerAdapter {
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
         // This partner supports multiple loads for the same partner placement.
         switch request.format {
-        case .banner:
+        case PartnerAdFormats.banner, PartnerAdFormats.adaptiveBanner:
             return AppLovinAdapterBannerAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
-        case .interstitial:
+        case PartnerAdFormats.interstitial:
             return AppLovinAdapterInterstitialAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
-        case .rewarded:
+        case PartnerAdFormats.rewarded:
             return AppLovinAdapterRewardedAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
         default:
-            // Not using the `.adaptiveBanner` case directly to maintain backward compatibility with Chartboost Mediation 4.0
-            if request.format.rawValue == "adaptive_banner" {
-                return AppLovinAdapterBannerAd(sdk: sdk, adapter: self, request: request, delegate: delegate)
-            } else {
-                throw error(.loadFailureUnsupportedAdFormat)
-            }
+            throw error(.loadFailureUnsupportedAdFormat)
         }
     }
     
