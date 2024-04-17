@@ -26,7 +26,7 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerAd {
         log(.loadStarted)
 
         // Fail if we cannot fit a fixed size banner in the requested size.
-        guard let size = fixedBannerSize(for: request.size ?? IABStandardAdSize) else {
+        guard let size = fixedBannerSize(for: request.bannerSize) else {
             let error = error(.loadFailureInvalidBannerSize)
             log(.loadFailed(error))
             return completion(.failure(error))
@@ -86,7 +86,10 @@ extension AppLovinAdapterBannerAd: ALAdDisplayDelegate {
 
 // MARK: - Helpers
 extension AppLovinAdapterBannerAd {
-    private func fixedBannerSize(for requestedSize: CGSize) -> (size: CGSize, partnerSize: ALAdSize)? {
+    private func fixedBannerSize(for requestedSize: BannerSize?) -> (size: CGSize, partnerSize: ALAdSize)? {
+        guard let requestedSize else {
+            return (IABStandardAdSize, .banner)
+        }
         let sizes: [(size: CGSize, partnerSize: ALAdSize)] = [
             (size: IABLeaderboardAdSize, partnerSize: .leader),
             (size: IABMediumAdSize, partnerSize: .mrec),
@@ -95,8 +98,8 @@ extension AppLovinAdapterBannerAd {
         // Find the largest size that can fit in the requested size.
         for (size, partnerSize) in sizes {
             // If height is 0, the pub has requested an ad of any height, so only the width matters.
-            if requestedSize.width >= size.width &&
-                (size.height == 0 || requestedSize.height >= size.height) {
+            if requestedSize.size.width >= size.width &&
+                (size.height == 0 || requestedSize.size.height >= size.height) {
                 return (size, partnerSize)
             }
         }
