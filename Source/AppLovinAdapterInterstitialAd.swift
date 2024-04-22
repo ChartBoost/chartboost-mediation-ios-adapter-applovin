@@ -9,16 +9,7 @@ import Foundation
 import UIKit
 
 /// The Chartboost Mediation AppLovin adapter interstitial ad.
-class AppLovinAdapterInterstitialAd: AppLovinAdapterAd, PartnerAd {
-    
-    /// The partner ad view to display inline. E.g. a banner view.
-    /// Should be nil for full-screen ads.
-    var inlineView: UIView? { nil }
-    
-    /// The loaded partner ad banner size.
-    /// Should be `nil` for full-screen ads.
-    var bannerSize: PartnerBannerSize? { nil }
-
+class AppLovinAdapterInterstitialAd: AppLovinAdapterAd, PartnerFullscreenAd {
     /// The AppLovin loaded ad instance.
     var ad: ALAd?
     
@@ -35,7 +26,7 @@ class AppLovinAdapterInterstitialAd: AppLovinAdapterAd, PartnerAd {
     }
     
     /// Shows a loaded ad.
-    /// It will never get called for banner ads. You may leave the implementation blank for that ad format.
+    /// Chartboost Mediation SDK will always call this method from the main thread.
     /// - parameter viewController: The view controller on which the ad will be presented on.
     /// - parameter completion: Closure to be performed once the ad has been shown.
     func show(with viewController: UIViewController, completion: @escaping (Result<PartnerDetails, Error>) -> Void) {
