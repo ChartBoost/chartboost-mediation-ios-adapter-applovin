@@ -58,6 +58,10 @@ final class AppLovinAdapter: PartnerAdapter {
             }
         }
 
+        // Apply initial consents
+        setConsents(configuration.consents, modifiedKeys: Set(configuration.consents.keys))
+        setIsUserUnderage(configuration.isUserUnderage)
+
         sdk.initialize(with: initConfig) { sdkConfig in
             if self.sdk.isInitialized {
                 self.log(.setUpSucceded)
