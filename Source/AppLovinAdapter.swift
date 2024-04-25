@@ -66,6 +66,10 @@ final class AppLovinAdapter: PartnerAdapter {
             }
         }
 
+        // Apply initial consents
+        setConsents(configuration.consents, modifiedKeys: Set(configuration.consents.keys))
+        setIsUserUnderage(configuration.isUserUnderage)
+
         sdk.initialize(with: initConfig) { sdkConfig in
             if self.sdk.isInitialized {
                 self.log(.setUpSucceded)
@@ -89,37 +93,34 @@ final class AppLovinAdapter: PartnerAdapter {
         completion(.success([:]))
     }
     
-    /// Indicates if GDPR applies or not and the user's GDPR consent status.
-    /// - parameter applies: `true` if GDPR applies, `false` if not, `nil` if the publisher has not provided this information.
-    /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
-    func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
+    /// Indicates that the user consent has changed.
+    /// - parameter consents: The new consents value, including both modified and unmodified consents.
+    /// - parameter modifiedKeys: A set containing all the keys that changed.
+    func setConsents(_ consents: [ConsentKey: ConsentValue], modifiedKeys: Set<ConsentKey>) {
         // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#consent-and-age-related-flags-in-gdpr-and-other-regions
-        if applies == true {
-            let userConsented = status == .granted
-            ALPrivacySettings.setHasUserConsent(userConsented)
-            log(.privacyUpdated(setting: "hasUserConsent", value: userConsented))
+        if modifiedKeys.contains(partnerID) || modifiedKeys.contains(ConsentKeys.gdprConsentGiven) {
+            // Use a partner-specific consent if available, falling back to the general GDPR consent if not
+            let consent = (consents[partnerID] ?? consents[ConsentKeys.gdprConsentGiven]) == ConsentValues.granted
+            ALPrivacySettings.setHasUserConsent(consent)
+            log(.privacyUpdated(setting: "hasUserConsent", value: consent))
+        }
+
+        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#multi-state-consumer-privacy-laws
+        if modifiedKeys.contains(ConsentKeys.ccpaOptIn) {
+            let doNotSell = consents[ConsentKeys.ccpaOptIn] != ConsentValues.granted
+            ALPrivacySettings.setDoNotSell(doNotSell)
+            log(.privacyUpdated(setting: "doNotSell", value: doNotSell))
         }
     }
 
-    /// Indicates if the user is subject to COPPA or not.
-    /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
-    func setCOPPA(isChildDirected: Bool) {
+    /// Indicates that the user is underage signal has changed.
+    /// - parameter isUserUnderage: `true` if the user is underage as determined by the publisher, `false` otherwise.
+    func setIsUserUnderage(_ isUserUnderage: Bool) {
         // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#prohibition-on-ads-to,-and-personal-information-from,-children-and-apps-exclusively-designed-for,-or-exclusively-directed-to,-children
-        ALPrivacySettings.setIsAgeRestrictedUser(isChildDirected)
-        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isChildDirected))
+        ALPrivacySettings.setIsAgeRestrictedUser(isUserUnderage)
+        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isUserUnderage))
     }
-    
-    /// Indicates the CCPA status both as a boolean and as an IAB US privacy string.
-    /// - parameter hasGivenConsent: A boolean indicating if the user has given consent.
-    /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
-    func setCCPA(hasGivenConsent: Bool, privacyString: String) {
-        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#multi-state-consumer-privacy-laws
-        // Note the NOT operator, for converting from "has not consented" to "do not sell" and vice versa
-        let doNotSell = !hasGivenConsent
-        ALPrivacySettings.setDoNotSell(doNotSell)
-        log(.privacyUpdated(setting: "doNotSell", value: doNotSell))
-    }
-    
+
     /// Creates a new banner ad object in charge of communicating with a single partner SDK ad instance.
     /// Chartboost Mediation SDK calls this method to create a new ad for each new load request. Ad instances are never reused.
     /// Chartboost Mediation SDK takes care of storing and disposing of ad instances so you don't need to.
