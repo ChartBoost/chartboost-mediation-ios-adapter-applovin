@@ -13,18 +13,26 @@ import AdSupport
 final class AppLovinAdapter: PartnerAdapter {
     
     /// The version of the partner SDK.
-    let partnerSDKVersion = ALSdk.version()
-    
+    var partnerSDKVersion: String {
+        AppLovinAdapterConfiguration.partnerSDKVersion
+    }
+
     /// The version of the adapter.
     /// It should have either 5 or 6 digits separated by periods, where the first digit is Chartboost Mediation SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
     /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    let adapterVersion = "4.12.4.0.0"
-    
+    var adapterVersion: String {
+        AppLovinAdapterConfiguration.adapterVersion
+    }
+
     /// The partner's unique identifier.
-    let partnerID = "applovin"
-    
+    var partnerID: String {
+        AppLovinAdapterConfiguration.partnerID
+    }
+
     /// The human-friendly partner name.
-    let partnerDisplayName = "AppLovin"
+    var partnerDisplayName: String {
+        AppLovinAdapterConfiguration.partnerDisplayName
+    }
     
     /// Instance of the AppLovin SDK
     let sdk: ALSdk = ALSdk.shared()
