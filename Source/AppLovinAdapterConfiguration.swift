@@ -31,7 +31,15 @@ import os.log
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
     @objc public static var testMode: Bool = false
-    
+
+    /// Flag that can optionally be set to disable the partner's audio.
+    /// Disabled by default.
+    @objc public static var isMuted: Bool = false {
+        didSet {
+            syncIsMuted()
+        }
+    }
+
     /// Flag that can optionally be set to enable the partner's verbose logging.
     /// Disabled by default.
     @objc public static var verboseLogging: Bool = false {
@@ -53,24 +61,26 @@ import os.log
 extension AppLovinAdapterConfiguration {
     
     /// The AppLovin SDK instance
-    static let sdk: ALSdk = ALSdk.shared()
+    private static let sdk: ALSdk = ALSdk.shared()
 
     static func sync() {
         syncVerboseLogging()
         syncLocationCollection()
+        syncIsMuted()
     }
 
-    static func syncVerboseLogging() {
+    private static func syncVerboseLogging() {
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
-        if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", "\(verboseLogging)")
-        }
+        os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", "\(verboseLogging)")
     }
 
-    static func syncLocationCollection() {
+    private static func syncLocationCollection() {
         sdk.settings.isLocationCollectionEnabled = locationCollection
-        if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", "\(locationCollection)")
-        }
+        os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", "\(locationCollection)")
+    }
+
+    private static func syncIsMuted() {
+        sdk.settings.isMuted = isMuted
+        os_log(.debug, log: log, "AppLovin SDK isMuted set to %{public}s", "\(isMuted)")
     }
 }
