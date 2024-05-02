@@ -77,23 +77,28 @@ extension AppLovinAdapterBannerAd: ALAdDisplayDelegate {
 // MARK: - Helpers
 extension AppLovinAdapterBannerAd {
     private func fixedBannerSize(for requestedSize: BannerSize?) -> (size: CGSize, partnerSize: ALAdSize)? {
+        // Return a default value if no size is specified
         guard let requestedSize else {
-            return (IABStandardAdSize, .banner)
+            return (BannerSize.standard.size, .banner)
         }
-        let sizes: [(size: CGSize, partnerSize: ALAdSize)] = [
-            (size: IABLeaderboardAdSize, partnerSize: .leader),
-            (size: IABMediumAdSize, partnerSize: .mrec),
-            (size: IABStandardAdSize, partnerSize: .banner)
-        ]
-        // Find the largest size that can fit in the requested size.
-        for (size, partnerSize) in sizes {
-            // If height is 0, the pub has requested an ad of any height, so only the width matters.
-            if requestedSize.size.width >= size.width &&
-                (size.height == 0 || requestedSize.size.height >= size.height) {
-                return (size, partnerSize)
+
+        // If we can find a size that fits, return that.
+        if let size = BannerSize.largestStandardFixedSizeThatFits(in: requestedSize) {
+            switch size {
+            case .standard:
+                return (BannerSize.standard.size, .banner)
+            case .medium:
+                return (BannerSize.medium.size, .mrec)
+            case .leaderboard:
+                return (BannerSize.leaderboard.size, .leader)
+            default:
+                // largestStandardFixedSizeThatFits currently only returns .standard, .medium, or .leaderboard,
+                // but if that changes then just default to .standard until this code gets updated.
+                return (BannerSize.standard.size, .banner)
             }
+        } else {
+            // largestStandardFixedSizeThatFits has returned nil to indicate it couldn't find a fit.
+            return nil
         }
-        // The requested size cannot fit any fixed size banners.
-        return nil
     }
 }
