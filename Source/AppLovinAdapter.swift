@@ -11,29 +11,10 @@ import AdSupport
 
 /// The Chartboost Mediation AppLovin adapter.
 final class AppLovinAdapter: PartnerAdapter {
-    
-    /// The version of the partner SDK.
-    var partnerSDKVersion: String {
-        AppLovinAdapterConfiguration.partnerSDKVersion
-    }
+    /// The adapter configuration type that contains adapter and partner info.
+    /// It may also be used to expose custom partner SDK options to the publisher.
+    var configuration: PartnerAdapterConfiguration.Type { AppLovinAdapterConfiguration.self }
 
-    /// The version of the adapter.
-    /// It should have either 5 or 6 digits separated by periods, where the first digit is Chartboost Mediation SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
-    /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    var adapterVersion: String {
-        AppLovinAdapterConfiguration.adapterVersion
-    }
-
-    /// The partner's unique identifier.
-    var partnerID: String {
-        AppLovinAdapterConfiguration.partnerID
-    }
-
-    /// The human-friendly partner name.
-    var partnerDisplayName: String {
-        AppLovinAdapterConfiguration.partnerDisplayName
-    }
-    
     /// Instance of the AppLovin SDK
     let sdk: ALSdk = ALSdk.shared()
 
@@ -98,9 +79,9 @@ final class AppLovinAdapter: PartnerAdapter {
     /// - parameter modifiedKeys: A set containing all the keys that changed.
     func setConsents(_ consents: [ConsentKey: ConsentValue], modifiedKeys: Set<ConsentKey>) {
         // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#consent-and-age-related-flags-in-gdpr-and-other-regions
-        if modifiedKeys.contains(partnerID) || modifiedKeys.contains(ConsentKeys.gdprConsentGiven) {
+        if modifiedKeys.contains(configuration.partnerID) || modifiedKeys.contains(ConsentKeys.gdprConsentGiven) {
             // Use a partner-specific consent if available, falling back to the general GDPR consent if not
-            let consent = (consents[partnerID] ?? consents[ConsentKeys.gdprConsentGiven]) == ConsentValues.granted
+            let consent = (consents[configuration.partnerID] ?? consents[ConsentKeys.gdprConsentGiven]) == ConsentValues.granted
             ALPrivacySettings.setHasUserConsent(consent)
             log(.privacyUpdated(setting: "hasUserConsent", value: consent))
         }
