@@ -5,11 +5,11 @@
 
 import AppLovinSDK
 import AdSupport
-import os.log
+import ChartboostMediationSDK
 
 /// A list of externally configurable properties pertaining to the partner SDK that can be retrieved and set by publishers.
-@objc public class AppLovinAdapterConfiguration: NSObject {
-    
+@objc public class AppLovinAdapterConfiguration: NSObject, PartnerAdapterConfiguration {
+
     /// The version of the partner SDK.
     @objc public static var partnerSDKVersion: String {
         ALSdk.version()
@@ -25,8 +25,6 @@ import os.log
 
     /// The human-friendly partner name.
     @objc public static let partnerDisplayName = "AppLovin"
-
-    private static let log = OSLog(subsystem: "com.chartboost.mediation.adapter.applovin", category: "Configuration")
 
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
@@ -71,16 +69,16 @@ extension AppLovinAdapterConfiguration {
 
     private static func syncVerboseLogging() {
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
-        os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", "\(verboseLogging)")
+        log("Verbose logging set to \(verboseLogging)")
     }
 
     private static func syncLocationCollection() {
         sdk.settings.isLocationCollectionEnabled = locationCollection
-        os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", "\(locationCollection)")
+        log("Location collection set to \(locationCollection)")
     }
 
     private static func syncIsMuted() {
         sdk.settings.isMuted = isMuted
-        os_log(.debug, log: log, "AppLovin SDK isMuted set to %{public}s", "\(isMuted)")
+        log("isMuted set to \(isMuted)")
     }
 }
