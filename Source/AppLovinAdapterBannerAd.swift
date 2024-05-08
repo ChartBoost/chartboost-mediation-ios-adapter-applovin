@@ -24,7 +24,11 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerBannerAd {
         log(.loadStarted)
 
         // Fail if we cannot fit a fixed size banner in the requested size.
-        guard let loadedSize = fixedBannerSize(for: request.bannerSize) else {
+        guard
+            let requestedSize = request.bannerSize,
+            let loadedSize = BannerSize.largestStandardFixedSizeThatFits(in: requestedSize),
+            let appLovinSize = loadedSize.appLovinAdSize
+        else {
             let error = error(.loadFailureInvalidBannerSize)
             log(.loadFailed(error))
             return completion(.failure(error))
@@ -33,7 +37,7 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerBannerAd {
         size = PartnerBannerSize(size: loadedSize.size, type: .fixed)
         loadCompletion = completion
 
-        let banner = ALAdView(sdk: sdk, size: loadedSize.partnerSize, zoneIdentifier: request.partnerPlacement)
+        let banner = ALAdView(sdk: sdk, size: appLovinSize, zoneIdentifier: request.partnerPlacement)
         banner.adDisplayDelegate = self
         banner.adLoadDelegate = self
         view = banner
@@ -74,31 +78,17 @@ extension AppLovinAdapterBannerAd: ALAdDisplayDelegate {
     }
 }
 
-// MARK: - Helpers
-extension AppLovinAdapterBannerAd {
-    private func fixedBannerSize(for requestedSize: BannerSize?) -> (size: CGSize, partnerSize: ALAdSize)? {
-        // Return a default value if no size is specified
-        guard let requestedSize else {
-            return (BannerSize.standard.size, .banner)
-        }
-
-        // If we can find a size that fits, return that.
-        if let size = BannerSize.largestStandardFixedSizeThatFits(in: requestedSize) {
-            switch size {
-            case .standard:
-                return (BannerSize.standard.size, .banner)
-            case .medium:
-                return (BannerSize.medium.size, .mrec)
-            case .leaderboard:
-                return (BannerSize.leaderboard.size, .leader)
-            default:
-                // largestStandardFixedSizeThatFits currently only returns .standard, .medium, or .leaderboard,
-                // but if that changes then just default to .standard until this code gets updated.
-                return (BannerSize.standard.size, .banner)
-            }
-        } else {
-            // largestStandardFixedSizeThatFits has returned nil to indicate it couldn't find a fit.
-            return nil
+extension BannerSize {
+    fileprivate var appLovinAdSize: ALAdSize? {
+        switch self {
+        case .standard:
+            .banner
+        case .medium:
+            .mrec
+        case .leaderboard:
+            .leader
+        default:
+            nil
         }
     }
 }
