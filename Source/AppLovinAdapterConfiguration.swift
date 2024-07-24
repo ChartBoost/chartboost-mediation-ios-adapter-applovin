@@ -24,14 +24,11 @@ import os.log
         }
     }
 
-    /// Flag that can optionally be set to enable location collection as documented at
-    /// https://dash.applovin.com/documentation/mediation/ios/getting-started/data-passing#location-passing
-    /// Enabled by default.
-    @objc public static var locationCollection: Bool = true {
-        didSet {
-            syncLocationCollection()
-        }
-    }
+    /// Flag that can optionally be set to enable location collection.
+    /// This property no longer does anything. `ALSdkSettings.isLocationCollectionEnabled`
+    /// no longer exists starting in SDK version `12.6.0`.
+    @available(*, deprecated, message: "This property no longer does anything.")
+    @objc public static var locationCollection: Bool = false
 }
 
 extension AppLovinAdapterConfiguration {
@@ -41,20 +38,12 @@ extension AppLovinAdapterConfiguration {
 
     static func sync() {
         syncVerboseLogging()
-        syncLocationCollection()
     }
 
     static func syncVerboseLogging() {
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
         if #available(iOS 12.0, *) {
             os_log(.debug, log: log, "AppLovin SDK verbose logging set to %{public}s", "\(verboseLogging)")
-        }
-    }
-
-    static func syncLocationCollection() {
-        sdk.settings.isLocationCollectionEnabled = locationCollection
-        if #available(iOS 12.0, *) {
-            os_log(.debug, log: log, "AppLovin SDK location collection set to %{public}s", "\(locationCollection)")
         }
     }
 }
