@@ -6,10 +6,10 @@ The Chartboost Mediation AppLovin adapter mediates AppLovin via the Chartboost M
 
 | Plugin | Version |
 | ------ | ------ |
-| Chartboost Mediation SDK | 4.0.0+ |
+| Chartboost Mediation SDK | 5.0.0+ |
 | Cocoapods | 1.11.3+ |
-| iOS | 11.0+ |
-| Xcode | 14.1+ |
+| iOS | 13.0+ |
+| Xcode | 15.0+ |
 
 ## Integration
 
