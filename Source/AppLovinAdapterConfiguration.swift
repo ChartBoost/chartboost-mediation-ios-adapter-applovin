@@ -19,7 +19,7 @@ import ChartboostMediationSDK
     /// last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
     /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.
     /// <Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    @objc public static let adapterVersion = "5.12.5.0.0"
+    @objc public static let adapterVersion = "5.12.6.0.0"
 
     /// The partner's unique identifier.
     @objc public static let partnerID = "applovin"
@@ -47,14 +47,11 @@ import ChartboostMediationSDK
         }
     }
 
-    /// Flag that can optionally be set to enable location collection as documented at
-    /// https://dash.applovin.com/documentation/mediation/ios/getting-started/data-passing#location-passing
-    /// Enabled by default.
-    @objc public static var locationCollection = true {
-        didSet {
-            syncLocationCollection()
-        }
-    }
+    /// Flag that can optionally be set to enable location collection.
+    /// This property no longer does anything. `ALSdkSettings.isLocationCollectionEnabled`
+    /// no longer exists starting in SDK version `12.6.0`.
+    @available(*, deprecated, message: "This property no longer does anything.")
+    @objc public static var locationCollection: Bool = false
 }
 
 extension AppLovinAdapterConfiguration {
@@ -63,18 +60,12 @@ extension AppLovinAdapterConfiguration {
 
     static func sync() {
         syncVerboseLogging()
-        syncLocationCollection()
         syncIsMuted()
     }
 
     private static func syncVerboseLogging() {
         sdk.settings.isVerboseLoggingEnabled = verboseLogging
         log("Verbose logging set to \(verboseLogging)")
-    }
-
-    private static func syncLocationCollection() {
-        sdk.settings.isLocationCollectionEnabled = locationCollection
-        log("Location collection set to \(locationCollection)")
     }
 
     private static func syncIsMuted() {
