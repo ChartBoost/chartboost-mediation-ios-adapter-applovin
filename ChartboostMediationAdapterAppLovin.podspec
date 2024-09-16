@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name        = 'ChartboostMediationAdapterAppLovin'
-  spec.version     = '4.12.6.0.1'
+  spec.version     = '4.13.0.0.1'
   spec.license     = { :type => 'MIT', :file => 'LICENSE.md' }
   spec.homepage    = 'https://github.com/ChartBoost/chartboost-mediation-ios-adapter-applovin'
   spec.authors     = { 'Chartboost' => 'https://www.chartboost.com/' }
@@ -25,5 +25,5 @@ Pod::Spec.new do |spec|
   spec.dependency 'ChartboostMediationSDK', '~> 4.0'
 
   # Partner network SDK and version that this adapter is certified to work with.
-  spec.dependency 'AppLovinSDK', '~> 12.6.0'
+  spec.dependency 'AppLovinSDK', '~> 13.0.0'
 end

@@ -18,7 +18,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// The version of the adapter.
     /// It should have either 5 or 6 digits separated by periods, where the first digit is Chartboost Mediation SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
     /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    let adapterVersion = "4.12.6.0.1"
+    let adapterVersion = "4.13.0.0.1"
     
     /// The partner's unique identifier.
     let partnerIdentifier = "applovin"
@@ -93,11 +93,10 @@ final class AppLovinAdapter: PartnerAdapter {
     }
 
     /// Indicates if the user is subject to COPPA or not.
+    /// Note: COPPA is no longer supported by AppLovin, starting in SDK version 13.0.0
     /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
     func setCOPPA(isChildDirected: Bool) {
-        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#prohibition-on-ads-to,-and-personal-information-from,-children-and-apps-exclusively-designed-for,-or-exclusively-directed-to,-children
-        ALPrivacySettings.setIsAgeRestrictedUser(isChildDirected)
-        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isChildDirected))
+        log(.custom("COPPA is no longer supported by AppLovin"))
     }
     
     /// Indicates the CCPA status both as a boolean and as an IAB US privacy string.
