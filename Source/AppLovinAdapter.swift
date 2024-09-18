@@ -97,9 +97,7 @@ final class AppLovinAdapter: PartnerAdapter {
     /// Indicates that the user is underage signal has changed.
     /// - parameter isUserUnderage: `true` if the user is underage as determined by the publisher, `false` otherwise.
     func setIsUserUnderage(_ isUserUnderage: Bool) {
-        // See https://dash.applovin.com/documentation/mediation/ios/getting-started/privacy#prohibition-on-ads-to,-and-personal-information-from,-children-and-apps-exclusively-designed-for,-or-exclusively-directed-to,-children
-        ALPrivacySettings.setIsAgeRestrictedUser(isUserUnderage)
-        log(.privacyUpdated(setting: "isAgeRestrictedUser", value: isUserUnderage))
+        // COPPA is no longer supported by AppLovin, starting in SDK version 13.0.0
     }
 
     /// Creates a new banner ad object in charge of communicating with a single partner SDK ad instance.
