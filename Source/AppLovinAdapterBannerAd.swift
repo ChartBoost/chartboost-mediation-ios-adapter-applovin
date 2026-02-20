@@ -1,4 +1,4 @@
-// Copyright 2022-2025 Chartboost, Inc.
+// Copyright 2022-2026 Chartboost, Inc.
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file.
@@ -37,7 +37,7 @@ final class AppLovinAdapterBannerAd: AppLovinAdapterAd, PartnerBannerAd {
         size = PartnerBannerSize(size: loadedSize.size, type: .fixed)
         loadCompletion = completion
 
-        let banner = ALAdView(sdk: sdk, size: appLovinSize, zoneIdentifier: request.partnerPlacement)
+        let banner = ALAdView(size: appLovinSize, zoneIdentifier: request.partnerPlacement)
         banner.adDisplayDelegate = self
         banner.adLoadDelegate = self
         view = banner

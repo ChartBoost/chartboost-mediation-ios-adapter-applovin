@@ -1,4 +1,4 @@
-// Copyright 2022-2025 Chartboost, Inc.
+// Copyright 2022-2026 Chartboost, Inc.
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file.
@@ -39,7 +39,7 @@ class AppLovinAdapterInterstitialAd: AppLovinAdapterAd, PartnerFullscreenAd {
         }
         showCompletion = completion
 
-        let interstitial = ALInterstitialAd(sdk: sdk)
+        let interstitial = ALInterstitialAd()
         interstitial.adDisplayDelegate = self
         interstitial.adVideoPlaybackDelegate = self
         interstitial.show(ad)
